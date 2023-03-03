@@ -1,7 +1,10 @@
 package com.example.surfapp
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.ImageView
+import androidx.activity.OnBackPressedCallback
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -10,32 +13,18 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-//        val waveInfoRV: RecyclerView = findViewById(R.id.rv_wave_list)
-//        waveInfoRV.layoutManager = LinearLayoutManager(this)
-//        waveInfoRV.setHasFixedSize(true)
-//
-//        val adapter = WaveInfoAdapter()
-//        waveInfoRV.adapter = adapter
-//
-//
-//        adapter.addWaveInfo(WaveInfo(text = "8ft" ))
-//        adapter.addWaveInfo(WaveInfo(text = "12ft" ))
-//        adapter.addWaveInfo(WaveInfo(text = "30ft" ))
-//        adapter.addWaveInfo(WaveInfo(text = "29ft" ))
-//        adapter.addWaveInfo(WaveInfo(text = "30ft" ))
-//        adapter.addWaveInfo(WaveInfo(text = "1ft" ))
-//        adapter.addWaveInfo(WaveInfo(text = "30ft" ))
-//        adapter.addWaveInfo(WaveInfo(text = "29ft" ))
-//        adapter.addWaveInfo(WaveInfo(text = "30ft" ))
-//        adapter.addWaveInfo(WaveInfo(text = "29ft" ))
-//        adapter.addWaveInfo(WaveInfo(text = "30ft" ))
-//        adapter.addWaveInfo(WaveInfo(text = "29ft" ))
-//        adapter.addWaveInfo(WaveInfo(text = "30ft" ))
-//        adapter.addWaveInfo(WaveInfo(text = "29ft" ))
-//        adapter.addWaveInfo(WaveInfo(text = "29ft" ))
-//        adapter.addWaveInfo(WaveInfo(text = "30ft" ))
-//        adapter.addWaveInfo(WaveInfo(text = "29ft" ))
-//        adapter.addWaveInfo(WaveInfo(text = "29ft" ))
-
+        // Disable swipe back so that the users won't be able go back to the log in page by accident
+        val callback = object : OnBackPressedCallback(true /* enabled by default */) {
+            override fun handleOnBackPressed() {
+                // do nothing
+            }
+        }
+        onBackPressedDispatcher.addCallback(this, callback)
     }
 }
+
+//    private fun onLoginClick(repo: GitHubRepo) {
+//        val intent = Intent(this, RepoDetailActivity::class.java)
+//        intent.putExtra(EXTRA_GITHUB_REPO, repo)
+//        startActivity(intent)
+//    }
