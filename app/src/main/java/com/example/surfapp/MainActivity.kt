@@ -10,33 +10,32 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val waveInfoRV: RecyclerView = findViewById(R.id.rv_wave_list)
-        waveInfoRV.layoutManager = LinearLayoutManager(this)
-        waveInfoRV.setHasFixedSize(true)
-
-        val adapter = WaveInfoAdapter()
-        waveInfoRV.adapter = adapter
-
-
-        adapter.addWaveInfo(WaveInfo(text = "8ft" ))
-        adapter.addWaveInfo(WaveInfo(text = "12ft" ))
-        adapter.addWaveInfo(WaveInfo(text = "30ft" ))
-        adapter.addWaveInfo(WaveInfo(text = "29ft" ))
-        adapter.addWaveInfo(WaveInfo(text = "30ft" ))
-        adapter.addWaveInfo(WaveInfo(text = "1ft" ))
-        adapter.addWaveInfo(WaveInfo(text = "30ft" ))
-        adapter.addWaveInfo(WaveInfo(text = "29ft" ))
-        adapter.addWaveInfo(WaveInfo(text = "30ft" ))
-        adapter.addWaveInfo(WaveInfo(text = "29ft" ))
-        adapter.addWaveInfo(WaveInfo(text = "30ft" ))
-        adapter.addWaveInfo(WaveInfo(text = "29ft" ))
-        adapter.addWaveInfo(WaveInfo(text = "30ft" ))
-        adapter.addWaveInfo(WaveInfo(text = "29ft" ))
-        adapter.addWaveInfo(WaveInfo(text = "29ft" ))
-        adapter.addWaveInfo(WaveInfo(text = "30ft" ))
-        adapter.addWaveInfo(WaveInfo(text = "29ft" ))
-        adapter.addWaveInfo(WaveInfo(text = "29ft" ))
-
+//        val waveInfoRV: RecyclerView = findViewById(R.id.rv_wave_list)
+//        waveInfoRV.layoutManager = LinearLayoutManager(this)
+//        waveInfoRV.setHasFixedSize(true)
+//
+//        val adapter = WaveInfoAdapter()
+//        waveInfoRV.adapter = adapter
+//
+//
+//        adapter.addWaveInfo(WaveInfo(text = "8ft" ))
+//        adapter.addWaveInfo(WaveInfo(text = "12ft" ))
+//        adapter.addWaveInfo(WaveInfo(text = "30ft" ))
+//        adapter.addWaveInfo(WaveInfo(text = "29ft" ))
+//        adapter.addWaveInfo(WaveInfo(text = "30ft" ))
+//        adapter.addWaveInfo(WaveInfo(text = "1ft" ))
+//        adapter.addWaveInfo(WaveInfo(text = "30ft" ))
+//        adapter.addWaveInfo(WaveInfo(text = "29ft" ))
+//        adapter.addWaveInfo(WaveInfo(text = "30ft" ))
+//        adapter.addWaveInfo(WaveInfo(text = "29ft" ))
+//        adapter.addWaveInfo(WaveInfo(text = "30ft" ))
+//        adapter.addWaveInfo(WaveInfo(text = "29ft" ))
+//        adapter.addWaveInfo(WaveInfo(text = "30ft" ))
+//        adapter.addWaveInfo(WaveInfo(text = "29ft" ))
+//        adapter.addWaveInfo(WaveInfo(text = "29ft" ))
+//        adapter.addWaveInfo(WaveInfo(text = "30ft" ))
+//        adapter.addWaveInfo(WaveInfo(text = "29ft" ))
+//        adapter.addWaveInfo(WaveInfo(text = "29ft" ))
 
     }
 }
