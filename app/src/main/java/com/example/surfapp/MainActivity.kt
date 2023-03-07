@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ImageView
+import android.widget.LinearLayout
 import androidx.activity.OnBackPressedCallback
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,6 +21,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
         onBackPressedDispatcher.addCallback(this, callback)
+
+        val surfForecastViewButton: LinearLayout = findViewById(R.id.surfForecastViewButton)
+        surfForecastViewButton.setOnClickListener {
+            val intent = Intent(this, ForecastActivity::class.java)
+            startActivity(intent)
+        }
     }
 }
 
