@@ -12,10 +12,10 @@
         android:theme="@style/Theme.AppCompat.NoActionBar"
         tools:targetApi="31">
         <activity
-            android:name=".ForecastActivity"
-            android:parentActivityName=".MainActivity" />
+            android:name=".ui.ForecastActivity"
+            android:parentActivityName=".ui.MainActivity" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".ui.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,8 +24,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:exported="true" />
+
     </application>
+    <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>

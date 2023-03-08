@@ -1,10 +1,10 @@
-package com.example.surfapp
+package com.example.surfapp.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import com.example.surfapp.R
 
 class LoginActivity : AppCompatActivity() {
 
