@@ -1,12 +1,11 @@
 package com.example.surfapp.ui
 
 
-import com.example.surfapp.ui.WaveForecastAdapter
 import com.example.surfapp.api.ApiService
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -15,20 +14,21 @@ import com.example.surfapp.data.WaveForecastResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import androidx.fragment.app.Fragment
 
-class ForecastActivity : AppCompatActivity() {
+class ForecastFragment : Fragment(R.layout.forecast_fragment) {
 
     private lateinit var forecastAdapter: WaveForecastAdapter
     private lateinit var forecastListRV: RecyclerView
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_forecast)
-        forecastListRV = findViewById(R.id.recycler_view)
-        forecastListRV.layoutManager = LinearLayoutManager(this)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        forecastListRV = view.findViewById(R.id.rv_forecast_list)
+        forecastListRV.layoutManager = LinearLayoutManager(requireContext())
         forecastListRV.setHasFixedSize(true)
-        doWaveForecastApiCall(44.64.toFloat(), (-124.05).toFloat(), "2023-03-07", "2023-03-07")
+        doWaveForecastApiCall(44.64.toFloat(), (-124.05).toFloat(), "2023-03-09", "2023-03-09")
 
     }
 

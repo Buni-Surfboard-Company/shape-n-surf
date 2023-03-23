@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-android-extensions'
     id 'com.google.devtools.ksp' version '1.7.21-1.0.8'
+    id 'androidx.navigation.safeargs.kotlin'
 }
 
 android {
@@ -44,12 +45,18 @@ android {
 
 dependencies {
     implementation project(":opencv")
+    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
+    implementation 'androidx.activity:activity-ktx:1.6.1'
+    implementation 'androidx.preference:preference-ktx:1.2.0'
+    implementation 'androidx.room:room-runtime:2.5.0'
+    implementation 'androidx.room:room-ktx:2.5.0'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.5.3'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.5.3'
+    implementation 'androidx.fragment:fragment-ktx:1.5.5'
 
-    /* Added Implementations */
-    implementation 'androidx.recyclerview:recyclerview:1.2.1'
-
-    implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'androidx.appcompat:appcompat:1.6.0'
     implementation 'com.google.android.material:material:1.8.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'org.tensorflow:tensorflow-lite-support:0.1.0'
@@ -64,5 +71,15 @@ dependencies {
 
     implementation 'com.squareup.retrofit2:converter-moshi:2.9.0'
     implementation 'com.squareup.moshi:moshi:1.14.0'
+
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
+
+    implementation 'com.google.devtools.ksp:symbol-processing-api:1.7.21-1.0.8'
+
     ksp 'com.squareup.moshi:moshi-kotlin-codegen:1.14.0'
+    ksp 'androidx.room:room-compiler:2.5.0'
+
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_nav_graph"
+    app:startDestination="@id/login">>
+
+    <fragment
+        android:id="@+id/login"
+        android:name="com.example.surfapp.ui.LoginFragment"
+        android:label="Login">
+        <action
+            android:id="@+id/navigate_to_home_screen"
+            app:destination="@id/home_screen" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/home_screen"
+        android:name="com.example.surfapp.ui.HomescreenFragment"
+        android:label="Home Screen">
+        <action
+            android:id="@+id/navigate_to_forecast_screen"
+            app:destination="@id/forecast_screen" />
+        <action
+            android:id="@+id/navigate_to_saved_shapes_screen"
+            app:destination="@id/saved_shapes_screen" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/forecast_screen"
+        android:name="com.example.surfapp.ui.ForecastFragment"
+        android:label="Forecast Screen">
+    </fragment>
+
+    <fragment
+        android:id="@+id/saved_shapes_screen"
+        android:name="com.example.surfapp.ui.SavedShapesFragment"
+        android:label="Saved Shapes Screen">
+    </fragment>
+
+</navigation>
