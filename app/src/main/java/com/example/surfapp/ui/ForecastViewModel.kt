@@ -17,13 +17,13 @@ class ForecastViewModel : ViewModel() {
      * private property.  These results are exposed to the outside world in immutable form via the
      * public `forecast` property below.
      */
-    private val _forecast = MutableLiveData<List<WaveForecastResponse>?>(null)
+    private val _forecast = MutableLiveData<WaveForecastResponse?>(null)
 
     /**
      * This value provides the most recent response from the API.
      * It is null if there are no current results (e.g. in the case of an error).
      */
-    val forecast: LiveData<List<WaveForecastResponse>?> = _forecast
+    val forecast: LiveData<WaveForecastResponse?> = _forecast
 
     /*
      * The current error for the most recent API query is stored in this private property.  This

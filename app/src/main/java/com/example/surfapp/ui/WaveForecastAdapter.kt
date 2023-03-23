@@ -13,9 +13,9 @@ import com.example.surfapp.data.WaveForecastResponse
 class WaveForecastAdapter() :
     RecyclerView.Adapter<WaveForecastAdapter.ViewHolder>() {
 
-    var waveForecasts: List<WaveForecastResponse>? = listOf()
-    fun updateForecast(forecastsList: List<WaveForecastResponse>?) {
-        waveForecasts = forecastsList
+    var waveForecasts: WaveForecastResponse? = null
+    fun updateForecast(forecastsObj: WaveForecastResponse?) {
+        waveForecasts = forecastsObj
         notifyDataSetChanged()
     }
 
@@ -28,13 +28,13 @@ class WaveForecastAdapter() :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         Log.d("Forecast adapter", "waveForecasts: $waveForecasts")
         if (waveForecasts != null) {
-            holder.bind(waveForecasts!![position].hourly)
+            holder.bind(waveForecasts!!.hourly)
         }
     }
 
     override fun getItemCount(): Int {
         Log.d("Forecast adapter", "waveForecasts: $waveForecasts")
-        return waveForecasts?.size ?: 0
+        return waveForecasts?.hourly?.time?.size ?: 0
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
