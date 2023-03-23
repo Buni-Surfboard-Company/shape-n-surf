@@ -10,13 +10,14 @@ import retrofit2.http.Query
 
 interface ApiService {
     @GET("v1/marine")
-    fun getHourlyWaveForecasts(
+    suspend fun getHourlyWaveForecasts(
         @Query("latitude") latitude: Float,
         @Query("longitude") longitude: Float,
         @Query("start_date") startDate: String,
         @Query("end_date") endDate: String,
+//        @Query("hourly") hourly: Array<String>
         @Query("hourly") hourly: Array<String>
-    ): Response<List<WaveForecastResponse>>
+    ): Response<WaveForecastResponse>
 
     companion object {
         private const val BASE_URL = "https://marine-api.open-meteo.com/"

@@ -14,7 +14,7 @@ class ForecastRepository (
     private var currentLongitude: Float? = null
     private var currentStartDate: String? = null
     private var currentEndDate: String? = null
-    private var cachedForecast: List<WaveForecastResponse>? = null
+    private var cachedForecast: WaveForecastResponse? = null
 
     suspend fun loadSurfForecast(
         latitude: Float,
@@ -22,7 +22,7 @@ class ForecastRepository (
         startDate: String,
         endDate: String,
         hourly: Array<String>
-    ) : Result<List<WaveForecastResponse>?> {
+    ) : Result<WaveForecastResponse?> {
         /*
          * If we have a cached forecast for the same location, return the cached forecast
          * without making a network call.  Otherwise, make an API call to fetch the forecast and
@@ -45,6 +45,7 @@ class ForecastRepository (
             withContext(ioDispatcher) {
                 try {
                     val response = service.getHourlyWaveForecasts(latitude, longitude, startDate, endDate, hourly)
+                    Log.d("Response body:", response.body().toString())
                     if (response.isSuccessful) {
                         Log.d("Forecast Repo:", "response: $response")
                         cachedForecast = response.body()!!
