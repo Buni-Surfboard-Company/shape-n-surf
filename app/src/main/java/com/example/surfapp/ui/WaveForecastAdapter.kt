@@ -35,9 +35,9 @@ class WaveForecastAdapter(private val waveForecast: WaveForecastResponse) :
         fun bind(hourly: Hourly) {
             val ctx = itemView.context
             timeTextView.text = hourly.time[0]
-            waveHeightTextView.text = hourly.waveHeight[0].toString()
-            waveDirectionTextView.text = hourly.waveDirection[0].toString()
-            wavePeriodTextView.text = hourly.wavePeriod[0].toString()
+            waveHeightTextView.text = hourly.waveHeight[0].toString() + " ft"
+            waveDirectionTextView.text = hourly.waveDirection[0].toString() + " ft"
+            wavePeriodTextView.text = hourly.wavePeriod[0].toString() + " ft"
         }
     }
 }
