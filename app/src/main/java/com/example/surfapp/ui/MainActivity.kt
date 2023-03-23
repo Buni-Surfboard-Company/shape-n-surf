@@ -6,11 +6,13 @@ import android.os.Bundle
 import android.widget.LinearLayout
 import androidx.activity.OnBackPressedCallback
 import com.example.surfapp.R
+import org.opencv.android.OpenCVLoader
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        OpenCVLoader.initDebug()
 
         // Disable swipe back so that the users won't be able go back to the log in page by accident
         val callback = object : OnBackPressedCallback(true /* enabled by default */) {
@@ -23,6 +25,12 @@ class MainActivity : AppCompatActivity() {
         val surfForecastViewButton: LinearLayout = findViewById(R.id.surfForecastViewButton)
         surfForecastViewButton.setOnClickListener {
             val intent = Intent(this, ForecastActivity::class.java)
+            startActivity(intent)
+        }
+
+        val uploadButton: LinearLayout = findViewById(R.id.uploadBoardsViewButton)
+        uploadButton.setOnClickListener {
+            val intent = Intent(this, ScanBoardActivity::class.java)
             startActivity(intent)
         }
     }
