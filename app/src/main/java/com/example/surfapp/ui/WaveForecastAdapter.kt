@@ -1,5 +1,6 @@
 package com.example.surfapp.ui
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,8 +10,14 @@ import com.example.surfapp.R
 import com.example.surfapp.data.Hourly
 import com.example.surfapp.data.WaveForecastResponse
 
-class WaveForecastAdapter(private val waveForecast: WaveForecastResponse) :
+class WaveForecastAdapter() :
     RecyclerView.Adapter<WaveForecastAdapter.ViewHolder>() {
+
+    var waveForecasts: List<WaveForecastResponse>? = listOf()
+    fun updateForecast(forecastsList: List<WaveForecastResponse>?) {
+        waveForecasts = forecastsList
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -19,11 +26,15 @@ class WaveForecastAdapter(private val waveForecast: WaveForecastResponse) :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(waveForecast.hourly[position])
+        Log.d("Forecast adapter", "waveForecasts: $waveForecasts")
+        if (waveForecasts != null) {
+            holder.bind(waveForecasts!![position].hourly)
+        }
     }
 
     override fun getItemCount(): Int {
-        return waveForecast.hourly.time.size
+        Log.d("Forecast adapter", "waveForecasts: $waveForecasts")
+        return waveForecasts?.size ?: 0
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
