@@ -5,7 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:paddingTop="16dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -23,28 +25,34 @@
                 android:layout_height="wrap_content"
                 android:gravity="start"
                 android:text="Wave Height: "
-                android:textColor="@android:color/white"
                 android:textSize="18sp"
                 android:textStyle="bold"
+                android:textColor="@color/black"
+                android:layout_marginStart="2dp"
+                android:layout_marginTop="2dp"
                 tools:layout_editor_absoluteX="2dp"
                 tools:layout_editor_absoluteY="0dp" />
 
             <TextView
                 android:id="@+id/tv_wave_height_value"
-                android:layout_width="67dp"
+                android:layout_width="57dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginTop="2dp"
                 android:gravity="bottom"
-                android:textColor="@android:color/holo_blue_light"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                android:textColor="@color/white"/>
 
             <TextView
                 android:id="@+id/tv_wave_direction"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Wave Direction: "
-                android:textColor="@android:color/white"
                 android:textSize="18sp"
                 android:textStyle="bold"
+                android:textColor="@color/black"
+                android:layout_marginStart="2dp"
+                android:layout_marginTop="2dp"
                 tools:layout_editor_absoluteX="191dp"
                 tools:layout_editor_absoluteY="47dp" />
 
@@ -52,8 +60,10 @@
                 android:id="@+id/tv_wave_direction_value"
                 android:layout_width="71dp"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/holo_blue_light"
-                android:textSize="18sp" />
+                android:layout_marginStart="2dp"
+                android:layout_marginTop="2dp"
+                android:textSize="18sp"
+                android:textColor="@color/white"/>
         </LinearLayout>
 
         <LinearLayout
@@ -65,42 +75,56 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Wave Period: "
-                android:textColor="@android:color/white"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:layout_marginTop="10dp"
+                android:textColor="@color/black"
+                android:layout_marginStart="2dp"
+                android:layout_marginBottom="2dp"
+                android:layout_marginTop="4dp"
                 tools:layout_editor_absoluteX="207dp"
                 tools:layout_editor_absoluteY="0dp" />
 
             <TextView
                 android:id="@+id/tv_wave_period_value"
-                android:layout_width="69dp"
+                android:layout_width="57dp"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/holo_blue_light"
+                android:layout_marginStart="2dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="2dp"
                 android:textSize="18sp"
-                android:layout_marginTop="10dp"/>
+                android:textColor="@color/white"/>
 
             <TextView
                 android:id="@+id/tv_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Time: "
-                android:textColor="@android:color/white"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:layout_marginTop="10dp"
+                android:textColor="@color/black"
+                android:layout_marginTop="4dp"
                 tools:layout_editor_absoluteX="150dp"
-                tools:layout_editor_absoluteY="47dp" />
+                tools:layout_editor_absoluteY="47dp"
+                android:layout_marginStart="2dp"
+                android:layout_marginBottom="2dp"/>
 
             <TextView
                 android:id="@+id/tv_time_value"
                 android:layout_width="151dp"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/holo_blue_light"
                 android:textSize="18sp"
-                android:layout_marginTop="10dp"/>
+                android:layout_marginTop="4dp"
+                android:layout_marginStart="2dp"
+                android:layout_marginBottom="2dp"
+                android:textColor="@color/white"/>
         </LinearLayout>
 
     </LinearLayout>
 
+    <ImageView
+        android:layout_width="376dp"
+        android:layout_height="8dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/white_background"/>
 </LinearLayout>

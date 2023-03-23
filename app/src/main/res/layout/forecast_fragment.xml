@@ -4,13 +4,33 @@
     android:id="@+id/coordinator_layout"
     android:layout_width="match_parent"
     android:background="#C6DDE7"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/topBackgroundImageView"
+        android:layout_width="match_parent"
+        android:layout_height="57dp"
+        android:background="#0981D1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center"
+        android:layout_marginTop="3dp"
+        android:text="March 12"
+        android:textSize="35sp"
+        android:textStyle="bold" />
 
     <androidx.recyclerview.widget.RecyclerView
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/rv_forecast_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_marginTop="60dp"/>
 
     <TextView
         android:id="@+id/tv_loading_error"
