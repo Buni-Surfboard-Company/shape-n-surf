@@ -14,7 +14,7 @@ class WaveForecastAdapter(private val waveForecast: WaveForecastResponse) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_wave_forecast, parent, false)
+            .inflate(R.layout.single_forecast_item, parent, false)
         return ViewHolder(view)
     }
 
