@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.Button
@@ -14,21 +15,62 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.example.surfapp.R
 import com.example.surfapp.ml.Model
+import com.itextpdf.text.Document
+import com.itextpdf.text.Image
+import com.itextpdf.text.pdf.PdfDocument
+import com.itextpdf.text.pdf.PdfWriter
 import org.opencv.android.Utils
 import org.opencv.core.*
 import org.opencv.core.CvType.CV_8UC3
-import org.opencv.imgcodecs.Imgcodecs
 import org.opencv.imgproc.Imgproc
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.support.image.TensorImage
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
+import kotlin.math.ceil
 
 
 class ScanBoardActivity : AppCompatActivity() {
 
     var pickedPhoto: Uri? = null
     var pickedBitMap: Bitmap? = null
+    private val PAPER_HEIGHT = 8
+    private val PPI = 96
     private val TAG = "ScanBoardActivity"
+
+    fun resizeImage(image: Mat): Mat {
+        val height = image.height()
+        val width = image.width()
+        val newHeight = (PAPER_HEIGHT * PPI).toDouble()
+        val newWidth = ((newHeight / height) * width)
+        val resizedImage = Mat()
+        Imgproc.resize(image, resizedImage, Size(newWidth, newHeight))
+        return resizedImage
+    }
+
+    fun createPdf(images: List<Mat>) {
+        val document = Document()
+        val fileName = "board.pdf"
+        PdfWriter.getInstance(document, FileOutputStream(File(filesDir, fileName)))
+        document.open()
+
+        for (image in images){
+            val stream = ByteArrayOutputStream()
+            val width: Int = image.rows()
+            val height: Int = image.cols()
+            val bitmap = Bitmap.createBitmap(height, width, Bitmap.Config.ARGB_8888)
+            Utils.matToBitmap(image, bitmap)
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+            val byteArray = stream.toByteArray()
+            val pdfImg = Image.getInstance(byteArray) //TODO try catch
+            document.add(pdfImg)
+        }
+
+        document.close()
+
+    }
 
     private val startGalleryLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         Log.d(TAG, "startGalleryLauncher")
@@ -161,7 +203,30 @@ class ScanBoardActivity : AppCompatActivity() {
             Utils.matToBitmap(finalImg, bitmap)
             tempImageView.setImageBitmap(bitmap)
 
+            /******************************** pdfer */
 
+            val boardHeight = 72 // user param
+
+            val numSections = ceil(boardHeight.toDouble() / PAPER_HEIGHT).toInt()
+            val sectionHeight = bitmap.height / numSections
+            val croppedImages = mutableListOf<Bitmap>()
+
+            for (i in 0 until numSections) {
+                val startY = i * sectionHeight
+                val endY = (i + 1) * sectionHeight
+                val croppedImage = Bitmap.createBitmap(bitmap, 0, startY, bitmap.width, endY - startY)
+                croppedImages.add(croppedImage)
+            }
+
+            val images = mutableListOf<Mat>()
+            for (i in 0 until numSections) {
+                val image = Mat()
+                Utils.bitmapToMat(croppedImages[i], image)
+                val resizedImage = resizeImage(image)
+                images.add(resizedImage)
+            }
+
+            createPdf(images)
         }
     }
 
