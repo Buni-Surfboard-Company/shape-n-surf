@@ -20,6 +20,8 @@ import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import com.google.android.material.progressindicator.CircularProgressIndicator
+import java.text.SimpleDateFormat
+import java.util.*
 
 class ForecastFragment : Fragment(R.layout.forecast_fragment) {
 
@@ -87,8 +89,8 @@ class ForecastFragment : Fragment(R.layout.forecast_fragment) {
     override fun onResume() {
         super.onResume()
 
-        viewModel.loadForecast(44.64.toFloat(), (-124.05).toFloat(), "2023-03-25", "2023-03-25", arrayOf("wave_period", "wave_height", "wave_direction"))
-
+        val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+        viewModel.loadForecast(44.64.toFloat(), (-124.05).toFloat(), currentDate, currentDate, arrayOf("wave_period", "wave_height", "wave_direction"))
     }
 
 

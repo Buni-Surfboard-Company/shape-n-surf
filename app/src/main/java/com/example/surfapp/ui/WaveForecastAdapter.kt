@@ -28,14 +28,11 @@ class WaveForecastAdapter() :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        Log.d("Forecast adapter", "waveForecasts: $waveForecasts")
-        if (waveForecasts != null) {
-            holder.bind(waveForecasts!!.hourly)
-        }
+        holder.bind(waveForecasts!!.hourly[position])
     }
 
     override fun getItemCount(): Int {
-        Log.d("Forecast adapter", "waveForecasts: $waveForecasts")
+//        Log.d("Forecast adapter", "waveForecasts: $waveForecasts")
         return waveForecasts?.hourly?.time?.size ?: 0
     }
 
