@@ -42,6 +42,7 @@
                 android:layout_marginTop="2dp"
                 android:gravity="bottom"
                 android:textSize="18sp"
+                android:textStyle="bold"
                 android:textColor="@color/white"/>
 
             <TextView
@@ -64,6 +65,7 @@
                 android:layout_marginStart="2dp"
                 android:layout_marginTop="2dp"
                 android:textSize="18sp"
+                android:textStyle="bold"
                 android:textColor="@color/white"/>
         </LinearLayout>
 
@@ -94,6 +96,7 @@
                 android:layout_marginTop="4dp"
                 android:layout_marginBottom="2dp"
                 android:textSize="18sp"
+                android:textStyle="bold"
                 android:textColor="@color/white"/>
 
             <TextView
@@ -115,6 +118,7 @@
                 android:layout_width="151dp"
                 android:layout_height="wrap_content"
                 android:textSize="18sp"
+                android:textStyle="bold"
                 android:layout_marginTop="4dp"
                 android:layout_marginStart="2dp"
                 android:layout_marginBottom="2dp"
