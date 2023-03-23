@@ -9,7 +9,7 @@
         android:name="com.example.surfapp.ui.LoginFragment"
         android:label="Login">
         <action
-            android:id="@+id/navigate_to_homescreen"
+            android:id="@+id/navigate_to_home_screen"
             app:destination="@id/home_screen" />
     </fragment>
 
@@ -18,14 +18,23 @@
         android:name="com.example.surfapp.ui.HomescreenFragment"
         android:label="Home Screen">
         <action
-            android:id="@+id/navigate_to_forecastscreen"
+            android:id="@+id/navigate_to_forecast_screen"
             app:destination="@id/forecast_screen" />
+        <action
+            android:id="@+id/navigate_to_saved_shapes_screen"
+            app:destination="@id/saved_shapes_screen" />
     </fragment>
 
     <fragment
         android:id="@+id/forecast_screen"
         android:name="com.example.surfapp.ui.ForecastFragment"
         android:label="Forecast Screen">
+    </fragment>
+
+    <fragment
+        android:id="@+id/saved_shapes_screen"
+        android:name="com.example.surfapp.ui.SavedShapesFragment"
+        android:label="Saved Shapes Screen">
     </fragment>
 
 </navigation>

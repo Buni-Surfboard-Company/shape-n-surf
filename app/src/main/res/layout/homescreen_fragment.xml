@@ -84,6 +84,7 @@
                     app:layout_constraintVertical_bias="0.0">
 
                     <LinearLayout
+                        android:id="@+id/pictureBoardViewButton"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_margin="8dp"
@@ -112,6 +113,7 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/savedShapesViewButton"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_margin="8dp"

@@ -25,7 +25,7 @@ class ForecastFragment : Fragment(R.layout.forecast_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        forecastListRV = view.findViewById(R.id.recycler_view)
+        forecastListRV = view.findViewById(R.id.rv_forecast_list)
         forecastListRV.layoutManager = LinearLayoutManager(requireContext())
         forecastListRV.setHasFixedSize(true)
         doWaveForecastApiCall(44.64.toFloat(), (-124.05).toFloat(), "2023-03-09", "2023-03-09")

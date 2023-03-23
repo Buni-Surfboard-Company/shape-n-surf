@@ -25,8 +25,16 @@ class HomescreenFragment : Fragment(R.layout.homescreen_fragment) {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
         val surfForecastViewButton: LinearLayout = view.findViewById(R.id.surfForecastViewButton)
+        val savedShapesViewButton: LinearLayout = view.findViewById(R.id.savedShapesViewButton)
+        val pictureBoardViewButton: LinearLayout = view.findViewById(R.id.pictureBoardViewButton)
+
         surfForecastViewButton.setOnClickListener {
-            val directions = HomescreenFragmentDirections.navigateToForecastscreen()
+            val directions = HomescreenFragmentDirections.navigateToForecastScreen()
+            findNavController().navigate(directions)
+        }
+
+        savedShapesViewButton.setOnClickListener {
+            val directions = HomescreenFragmentDirections.navigateToSavedShapesScreen()
             findNavController().navigate(directions)
         }
     }

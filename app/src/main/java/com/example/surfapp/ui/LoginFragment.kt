@@ -21,7 +21,7 @@ class LoginFragment : Fragment(R.layout.login_fragment) {
 
         loginButton.setOnClickListener {
             //later we can be passing user data (profile picture/name) when opening homescreen from login page
-            val directions = LoginFragmentDirections.navigateToHomescreen()
+            val directions = LoginFragmentDirections.navigateToHomeScreen()
             findNavController().navigate(directions)
         }
     }
