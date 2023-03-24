@@ -17,11 +17,16 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.viewModels
+import com.example.surfapp.data.StoredData
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.LatLngBounds
 
 class HomescreenFragment : Fragment(R.layout.homescreen_fragment) {
 
     private lateinit var contextMenuView: View
     private lateinit var contextMenu: PopupWindow
+    private val dbViewModel : SavedCoordinatesViewModel by viewModels()
     override fun onViewCreated(
         view: View,
         savedInstanceState: Bundle?
@@ -34,12 +39,53 @@ class HomescreenFragment : Fragment(R.layout.homescreen_fragment) {
 
 
         mapFragment.getMapAsync { googleMap: GoogleMap ->
+            // Retrieve the list of saved coordinates from the SavedCoordinatesViewModel
+            dbViewModel.savedCoordinates.observe(viewLifecycleOwner) { savedCoordinates ->
+                googleMap.clear()
+                // Loop through the list of saved coordinates to create and add markers to the map
+                savedCoordinates.forEach { storedData ->
+                    val latLng = storedData.coordinate.split(",") // Split the latLngString to get the latitude and longitude
+                    val latitude = latLng[0].toDouble()
+                    val longitude = latLng[1].toDouble()
+                    val markerOptions = MarkerOptions().position(LatLng(latitude, longitude)).title("MySurfSpot")
+                    val marker = googleMap.addMarker(markerOptions)
+                    marker?.tag = storedData.timeStamp // Set the id of the StoredData object as the unique tag of the marker
+                }
+                dbViewModel.lastSavedCoordinate.observe(viewLifecycleOwner) { lastSavedCoordinate ->
+                    if (lastSavedCoordinate != null) {
+                        val latLng = lastSavedCoordinate.coordinate.split(",")
+                        val latitude = latLng[0].toDouble()
+                        val longitude = latLng[1].toDouble()
+                        val lastSavedSurfSpot = LatLng(latitude, longitude)
+
+                        // Use a LatLngBounds.Builder to create a bounding box that includes all the saved surf spots on the map
+                        val boundsBuilder = LatLngBounds.builder()
+                        savedCoordinates.forEach { storedData ->
+                            val latLng = storedData.coordinate.split(",")
+                            val latitude = latLng[0].toDouble()
+                            val longitude = latLng[1].toDouble()
+                            boundsBuilder.include(LatLng(latitude, longitude))
+                        }
+                        boundsBuilder.include(lastSavedSurfSpot)
+
+                        // Zoom the map to the bounding box that includes all the saved surf spots on the map
+                        val bounds = boundsBuilder.build()
+                        val padding = TypedValue.applyDimension(
+                            TypedValue.COMPLEX_UNIT_DIP,
+                            50f,
+                            resources.displayMetrics
+                        ).toInt() // Add 50dp of padding around the bounding box
+                        googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding))
+                    }
+                }
+            }
+
             // Set an OnClickListener for the marker
             googleMap.setOnMarkerClickListener { marker ->
                 // Show the context menu for the marker
                 Log.d("Markers location:", "Latitude: ${marker.position.latitude}, Longitude: ${marker.position.longitude}")
                 // open a dialog
-                showMarkerInfo(marker)
+                showMarkerDialog(marker)
                 // Return true to indicate that we have handled the click event
                 true
             }
@@ -49,6 +95,15 @@ class HomescreenFragment : Fragment(R.layout.homescreen_fragment) {
                 // Create a marker at the clicked location and add it to the map
                 val markerOptions = MarkerOptions().position(latLng)
                 val marker = googleMap.addMarker(markerOptions)
+
+                // Get the latitude and longitude of the clicked location
+                val latitude = latLng.latitude
+                val longitude = latLng.longitude
+
+                // Combine the latitude and longitude into a string
+                val latLngString = "$latitude,$longitude"
+
+                dbViewModel.addSavedSurfSpot(StoredData(latLngString, System.currentTimeMillis()))
 
                 // Set the title of the marker to the latitude and longitude
                 marker?.title = "MySurfSpot"
@@ -71,8 +126,20 @@ class HomescreenFragment : Fragment(R.layout.homescreen_fragment) {
         val pictureBoardViewButton: LinearLayout = view.findViewById(R.id.pictureBoardViewButton)
 
         surfForecastViewButton.setOnClickListener {
-            val directions = HomescreenFragmentDirections.navigateToForecastScreen()
-            findNavController().navigate(directions)
+            dbViewModel.lastSavedCoordinate.observe(viewLifecycleOwner) { lastSavedCoordinate ->
+                if (lastSavedCoordinate != null) {
+                    // open the last saved location
+                    val bundle = Bundle()
+                    val latLng = lastSavedCoordinate.coordinate.split(",") // Split the latLngString to get the latitude and longitude
+                    bundle.putString("lat", latLng[0])
+                    bundle.putString("lon", latLng[1])
+                    findNavController().navigate(R.id.forecast_screen, bundle)
+                } else {
+                    // open default, Newport
+                    val directions = HomescreenFragmentDirections.navigateToForecastScreen()
+                    findNavController().navigate(directions)
+                }
+            }
         }
 
         savedShapesViewButton.setOnClickListener {
@@ -86,20 +153,22 @@ class HomescreenFragment : Fragment(R.layout.homescreen_fragment) {
         }
     }
 
-    private fun showMarkerInfo(marker: Marker) {
+    private fun showMarkerDialog(marker: Marker) {
         val builder = AlertDialog.Builder(requireContext())
         builder.setMessage("Please select an action for the selected surf spot:")
             .setCancelable(true)
             .setPositiveButton("Delete saved spot") { dialog, which ->
-                //delete logic here
-                marker.remove()
+                Log.d("showMarkerDialog", "attempting to delete ${marker.position.latitude},${marker.position.longitude}")
+                //delete mark from the db
+                dbViewModel.deleteSavedSurfSpot("${marker.position.latitude},${marker.position.longitude}")
+                //delete mark from the map
+//                marker.remove()
             }
             .setNeutralButton("View wave forecast") { dialog, which ->
                 // Navigate to a new activity or perform other action
                 val bundle = Bundle()
                 bundle.putString("lat", marker.position.latitude.toString())
                 bundle.putString("lon", marker.position.longitude.toString())
-                val directions = HomescreenFragmentDirections.navigateToForecastScreen()
                 findNavController().navigate(R.id.forecast_screen, bundle)
             }
         val dialog = builder.create()
