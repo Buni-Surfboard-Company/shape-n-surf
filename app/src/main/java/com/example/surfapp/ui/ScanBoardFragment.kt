@@ -377,8 +377,6 @@ class ScanBoardFragment : Fragment(R.layout.upload_boards_fragment) {
     }
 
     private fun funTime(bitmap: Bitmap){
-        val progressBar = requireView().findViewById<ProgressBar>(R.id.determinateBar)
-        progressBar.visibility = View.VISIBLE
         val prob = isBoard(bitmap)
         Log.d(TAG, prob.toString())
         if (prob < 1.5){
@@ -392,7 +390,6 @@ class ScanBoardFragment : Fragment(R.layout.upload_boards_fragment) {
             val toast = Toast.makeText(requireContext(), "Not a Board, fool!", Toast.LENGTH_LONG)
             toast.show()
         }
-        progressBar.visibility = View.GONE
     }
 
     private val startGalleryLauncher =
