@@ -19,6 +19,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -94,6 +95,26 @@ class ScanBoardFragment : Fragment(R.layout.upload_boards_fragment) {
 
     }
 
+    fun navigate(){
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle("Nice!")
+        builder.setMessage("Would you like to View your board?")
+
+        builder.setPositiveButton("View Board") { _, _ ->
+            // Navigate to fragment 1
+            val directions = ScanBoardFragmentDirections.navigateToSavedShapesScreen()
+            findNavController().navigate(directions)
+        }
+
+        builder.setNegativeButton("Upload Another") { _, _ ->
+            // Navigate to fragment 2
+            val directions = ScanBoardFragmentDirections.navigateToUploadBoardsScreen()
+            findNavController().navigate(directions)
+        }
+
+        val dialog = builder.create()
+        dialog.show()
+    }
     fun saveBoard(images: List<Mat>) {
         val builder = AlertDialog.Builder(context)
 
@@ -108,9 +129,12 @@ class ScanBoardFragment : Fragment(R.layout.upload_boards_fragment) {
             val fileName = input.text.toString()
             dialog.dismiss()
             createPdf(images, fileName)
+            navigate()
         }
 
         builder.setNegativeButton("Cancel") { dialog, which ->
+            val directions = ScanBoardFragmentDirections.navigateToUploadBoardsScreen()
+            findNavController().navigate(directions)
             dialog.cancel()
         }
         builder.show()
@@ -140,6 +164,8 @@ class ScanBoardFragment : Fragment(R.layout.upload_boards_fragment) {
             processImage(bitmap, input)
         }
         alertDialogBuilder.setNegativeButton("Cancel") { dialog, _ ->
+            val directions = ScanBoardFragmentDirections.navigateToUploadBoardsScreen()
+            findNavController().navigate(directions)
             dialog.cancel()
         }
         alertDialogBuilder.show()
@@ -328,26 +354,31 @@ class ScanBoardFragment : Fragment(R.layout.upload_boards_fragment) {
             val resizedImage = resizeImage(image)
             images.add(resizedImage)
         }
-        val lastwidth: Int = img.rows()
-        val lastheight: Int = img.cols()
+        var lastwidth: Int = img.rows()
+        var lastheight: Int = img.cols()
+        if(lastwidth > lastheight){
+            lastwidth = img.cols()
+            lastheight = img.rows()
+        }
         val lastbitmap = Bitmap.createBitmap(lastwidth, lastheight, Bitmap.Config.ARGB_8888)
         Utils.matToBitmap(img, lastbitmap)
         images.add(0, resizeImage(img))
         tempImageView.setImageBitmap(lastbitmap)
         saveBoard(images)
 
-        val matList = mutableListOf<Mat>()
-        matList.add(img)
-        matList.add(edges)
-        matList.add(eroded)
-        matList.add(img)
-        showBoard(matList)
+//        val matList = mutableListOf<Mat>()
+//        matList.add(img)
+//        matList.add(edges)
+//        matList.add(eroded)
+//        matList.add(img)
+//        showBoard(matList)
 
         return true
     }
 
     private fun funTime(bitmap: Bitmap){
-
+        val progressBar = requireView().findViewById<ProgressBar>(R.id.determinateBar)
+        progressBar.visibility = View.VISIBLE
         val prob = isBoard(bitmap)
         Log.d(TAG, prob.toString())
         if (prob < 1.5){
@@ -361,6 +392,7 @@ class ScanBoardFragment : Fragment(R.layout.upload_boards_fragment) {
             val toast = Toast.makeText(requireContext(), "Not a Board, fool!", Toast.LENGTH_LONG)
             toast.show()
         }
+        progressBar.visibility = View.GONE
     }
 
     private val startGalleryLauncher =
@@ -374,7 +406,7 @@ class ScanBoardFragment : Fragment(R.layout.upload_boards_fragment) {
                     decoder.isMutableRequired = true
                 }
                 val resizeBitmap: Bitmap = Bitmap.createScaledBitmap(bitmap, 180, 180, true)
-                if (pickedPhoto != null ) funTime(resizeBitmap!!)
+                if (pickedPhoto != null ) funTime(bitmap!!)
             }
         }
 

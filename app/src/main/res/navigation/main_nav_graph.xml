@@ -53,6 +53,12 @@
         <action
             android:id="@+id/navigate_to_home_screen"
             app:destination="@id/home_screen" />
+        <action
+            android:id="@+id/navigate_to_saved_shapes_screen"
+            app:destination="@id/saved_shapes_screen" />
+        <action
+            android:id="@+id/navigate_to_upload_boards_screen"
+            app:destination="@id/upload_board_screen"/>
     </fragment>
 
 </navigation>
