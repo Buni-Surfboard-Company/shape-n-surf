@@ -15,7 +15,7 @@ android {
         targetSdk 33
         versionCode 1
         versionName "1.0"
-
+        buildConfigField("String", "GOOGLE_API_KEY", GOOGLE_API_KEY)
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -61,6 +61,8 @@ dependencies {
     implementation 'com.squareup.moshi:moshi:1.14.0'
 
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
+
+    implementation 'com.google.android.gms:play-services-maps:18.0.1'
 
     implementation 'com.google.devtools.ksp:symbol-processing-api:1.7.21-1.0.8'
 

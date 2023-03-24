@@ -171,8 +171,36 @@
                     </LinearLayout>
                 </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
-            </LinearLayout>
+        </LinearLayout>
     </ScrollView>
+
+    <androidx.cardview.widget.CardView
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:id="@+id/map_card"
+        android:layout_width="match_parent"
+        android:layout_height="518dp"
+        android:layout_margin="16dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
+        app:cardUseCompatPadding="true"
+        >
+
+        <FrameLayout
+            android:id="@+id/map_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#FFFFFF"
+            >
+
+            <fragment
+                android:id="@+id/map_fragment"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </FrameLayout>
+
+    </androidx.cardview.widget.CardView>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
