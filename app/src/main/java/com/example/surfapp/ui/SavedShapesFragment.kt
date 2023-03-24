@@ -24,8 +24,7 @@ class SavedShapesFragment : Fragment(R.layout.saved_shapes_fragment) {
 
         var directory = File(filePath)
         var files = directory.listFiles().toList()
-//        val mgr: AssetManager = requireContext().assets
-//        val list = mgr.list(filePath)
+
         if (files != null) for (i in files.indices) {
 //            Log.e("FILE:", path + "/" + list[i])
         }

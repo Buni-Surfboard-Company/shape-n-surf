@@ -43,51 +43,20 @@ class SavedShapesAdapter():RecyclerView.Adapter<SavedShapesAdapter.ViewHolder>()
 
         fun bind(file: File) {
             nameTV.text = file.name
-
+//https://stackoverflow.com/questions/10698360/how-to-convert-a-pdf-page-to-an-image-in-android
             val fileDescriptor: ParcelFileDescriptor =
                 ParcelFileDescriptor.open(File(file.path), MODE_READ_ONLY)
             val renderer = PdfRenderer(fileDescriptor)
-            val pageCount: Int = renderer.pageCount
-            for (i in 0 until pageCount) {
-                val page: PdfRenderer.Page = renderer.openPage(i)
-                val bitmap =
-                    Bitmap.createBitmap(page.width, page.height, Bitmap.Config.ARGB_8888)
-                val canvas = Canvas(bitmap)
-                canvas.drawColor(Color.WHITE)
-                canvas.drawBitmap(bitmap, (0).toFloat(), (0).toFloat(), null)
-                page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
-                page.close()
-//                if (bitmap == null) return null
-////                if (bitmapIsBlankOrWhite(bitmap)) return null
-//                val root: String = Environment.getExternalStorageDirectory().toString()
-//                val file = File("$root$filename.png")
-//                if (file.exists()) file.delete()
-//                try {
-//                    val out = FileOutputStream(file)
-//                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
-//                    Log.v("Saved Image - ", file.absolutePath)
-//                    out.flush()
-//                    out.close()
-//                } catch (e: Exception) {
-//                    e.printStackTrace()
-//                }
-//            }
+            val page: PdfRenderer.Page = renderer.openPage(1)
+            val bitmap =
+                Bitmap.createBitmap(page.width, page.height, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(bitmap)
+            canvas.drawColor(Color.WHITE)
+            canvas.drawBitmap(bitmap, (0).toFloat(), (0).toFloat(), null)
+            page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+            page.close()
 
-//            val page = pdfReader.getPageContent(1)
-//
-//            val image = Image.getInstance(page)
-//            val stream = ByteArrayOutputStream()
-//            val document = Document()
-//            val writer = PdfWriter.getInstance(document, stream)
-//            document.open()
-//            document.add(image)
-//            document.close()
-//            stream.close()
-//
-//            val bitmap = BitmapFactory.decodeByteArray(stream.toByteArray(),0, stream.size())
-//
-                pictureIV.setImageBitmap(bitmap)
-            }
+            pictureIV.setImageBitmap(bitmap)
         }
     }
 }
