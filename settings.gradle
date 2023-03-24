@@ -14,5 +14,3 @@ dependencyResolutionManagement {
 }
 rootProject.name = "SurfApp"
 include ':app'
-include ':sdk'
-include ':opencv'
