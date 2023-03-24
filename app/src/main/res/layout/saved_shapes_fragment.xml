@@ -1,18 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/coordinator_layout"
     android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#C6DDE7"
     android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/topBackgroundImageView"
+        android:layout_width="match_parent"
+        android:layout_height="59dp"
+        android:background="#4eb5f5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/datePicker"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center"
+        android:layout_marginTop="3dp"
+        android:background="@drawable/calendar_button_background"
+        android:text="Saved Shapes"
+        android:textSize="26dp"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/backButton"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="14dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/baseline_arrow_back_24" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_shapes_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_marginTop="60dp"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="313dp" />
 
 
-<!--    <TextView-->
+    <!--    <TextView-->
 <!--        android:id="@+id/tv_loading_error"-->
 <!--        android:layout_width="wrap_content"-->
 <!--        android:layout_height="wrap_content"-->

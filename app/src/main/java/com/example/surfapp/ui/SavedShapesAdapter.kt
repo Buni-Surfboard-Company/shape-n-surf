@@ -6,9 +6,11 @@ import android.graphics.Color
 import android.graphics.pdf.PdfRenderer
 import android.os.ParcelFileDescriptor
 import android.os.ParcelFileDescriptor.MODE_READ_ONLY
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -18,12 +20,12 @@ import java.io.File
 
 
 class SavedShapesAdapter(private val onClick: (File) -> Unit):RecyclerView.Adapter<SavedShapesAdapter.ViewHolder>() {
-    var boardFiles: List<File> = listOf()
+    var boardFiles: MutableList<File> = mutableListOf()
 
     override fun getItemCount() = this.boardFiles.size
 
     fun updateBoards(files: List<File>) {
-        boardFiles = files ?: listOf()
+        boardFiles = files.toMutableList() ?: mutableListOf()
         notifyDataSetChanged()
     }
 
@@ -35,12 +37,21 @@ class SavedShapesAdapter(private val onClick: (File) -> Unit):RecyclerView.Adapt
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(this.boardFiles[position])
+        holder.deleteButton.setOnClickListener {
+            Log.d("DELETE", "delete")
+            holder.currentFile.delete()
+            boardFiles.removeAt(position)
+            notifyItemRemoved(position)
+        }
     }
+
+
 
     class ViewHolder(itemView: View, val onClick: (File) -> Unit) : RecyclerView.ViewHolder(itemView) {
         private val pictureIV: ImageView = itemView.findViewById(R.id.iv_board_picture)
+        val deleteButton: Button = itemView.findViewById<Button>(R.id.delete_item)
         private val nameTV: TextView = itemView.findViewById(R.id.tv_board_name)
-        private lateinit var currentFile: File
+        lateinit var currentFile: File
         init {
             itemView.setOnClickListener{
                 currentFile.let(onClick)
