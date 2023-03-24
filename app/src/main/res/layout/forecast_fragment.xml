@@ -10,22 +10,30 @@
     <TextView
         android:id="@+id/topBackgroundImageView"
         android:layout_width="match_parent"
-        android:layout_height="57dp"
-        android:background="#0981D1"
+        android:layout_height="59dp"
+        android:background="#4eb5f5"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/datePicker"
-        android:layout_width="wrap_content"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_gravity="top|center"
         android:layout_marginTop="3dp"
-        android:text="March 12"
-        android:textSize="35sp"
-        android:textStyle="bold"
-        android:background="#0981D1"/>
+        android:background="@drawable/calendar_button_background"
+        android:text="Date"
+        android:textSize="26dp"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/backButton"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="14dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/baseline_arrow_back_24" />
 
     <androidx.recyclerview.widget.RecyclerView
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -38,9 +46,10 @@
         android:id="@+id/tv_loading_error"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:textAppearance="?attr/textAppearanceBody1"
-        android:textColor="?attr/colorError"
+        android:layout_gravity="center"
+        android:textAppearance="?android:textAppearanceLarge"
+        android:textColor="?android:colorError"
+        android:text="Loading Error"
         android:visibility="invisible" />
 
     <com.google.android.material.progressindicator.CircularProgressIndicator

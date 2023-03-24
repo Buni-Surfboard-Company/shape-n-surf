@@ -23,7 +23,9 @@ import androidx.fragment.app.viewModels
 import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.progressindicator.CircularProgressIndicator
+import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -37,8 +39,6 @@ class ForecastFragment : Fragment(R.layout.forecast_fragment) {
 
     private val viewModel: ForecastViewModel by viewModels()
 
-
-
     // Declare the UI element that will trigger the date picker
     private lateinit var button: Button
 
@@ -50,6 +50,14 @@ class ForecastFragment : Fragment(R.layout.forecast_fragment) {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val backButton = view.findViewById<Button>(R.id.backButton)
+
+        // Set an OnClickListener on the back button
+        backButton.setOnClickListener {
+            val directions = ForecastFragmentDirections.navigateToHomeScreen()
+            findNavController().navigate(directions)
+        }
 
         loadingErrorTV = view.findViewById(R.id.tv_loading_error)
         loadingIndicator = view.findViewById(R.id.loading_indicator)
@@ -78,7 +86,8 @@ class ForecastFragment : Fragment(R.layout.forecast_fragment) {
          */
         viewModel.error.observe(viewLifecycleOwner) { error ->
             if (error != null) {
-                loadingErrorTV.text = (error.message).toString()
+                val errorMessage = JSONObject((error.message).toString())
+                loadingErrorTV.text = errorMessage.getString("reason")
                 loadingErrorTV.visibility = View.VISIBLE
                 Log.e(tag, "Error fetching forecast: ${error.message}")
             }
@@ -99,7 +108,7 @@ class ForecastFragment : Fragment(R.layout.forecast_fragment) {
             }
         }
 
-        button =    view.findViewById(R.id.datePicker)
+        button = view.findViewById(R.id.datePicker)
 
         button.setOnClickListener {
             showDatePickerDialog()
@@ -125,6 +134,8 @@ class ForecastFragment : Fragment(R.layout.forecast_fragment) {
         val defaultYear = calendar.get(Calendar.YEAR)
         val defaultMonth = calendar.get(Calendar.MONTH)
         val defaultDay = calendar.get(Calendar.DAY_OF_MONTH)
+        val defaultLat = 44.642274.toFloat()
+        val defaultLon = (-124.062642).toFloat()
 
         // Set default values for year, month, and day if they don't exist in SharedPreferences
         if (!sharedPreferences.contains("year")) {
@@ -133,9 +144,25 @@ class ForecastFragment : Fragment(R.layout.forecast_fragment) {
         if (!sharedPreferences.contains("month")) {
             sharedPreferences.edit().putInt("month", defaultMonth).apply()
         }
+
         if (!sharedPreferences.contains("day")) {
             sharedPreferences.edit().putInt("day", defaultDay).apply()
         }
+
+        val lat = arguments?.getString("lat")?.toFloat()
+        if (lat != null){
+            sharedPreferences.edit().putFloat("lat", lat).apply()
+        } else if (!sharedPreferences.contains("lat")) {
+            sharedPreferences.edit().putFloat("lat", defaultLat).apply()
+        }
+
+        val lon = arguments?.getString("lon")?.toFloat()
+        if (lon != null) {
+            sharedPreferences.edit().putFloat("lon", lon).apply()
+        } else if (!sharedPreferences.contains("lon")){
+            sharedPreferences.edit().putFloat("lon", defaultLon).apply()
+        }
+
         // Update the text of the button with the default date
         updateDateButton()
         loadForecastData()
@@ -203,33 +230,12 @@ class ForecastFragment : Fragment(R.layout.forecast_fragment) {
         val month = sharedPreferences.getInt("month", 0)
         val day = sharedPreferences.getInt("day", 0)
 
+        val lat = arguments?.getString("lat")?.toFloat() ?: sharedPreferences.getFloat("lat", 0f)
+        val lon = arguments?.getString("lon")?.toFloat() ?: sharedPreferences.getFloat("lon", 0f)
+
         // Format the date as a string (e.g. "2023-03-21")
         val dateString = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date(year - 1900, month, day))
 
-        viewModel.loadForecast(44.64.toFloat(), (-124.05).toFloat(), dateString, dateString, arrayOf("wave_period", "wave_height", "wave_direction"))
+        viewModel.loadForecast(lat, lon, dateString, dateString, arrayOf("wave_period", "wave_height", "wave_direction"))
     }
-
-
-//    private fun doWaveForecastApiCall(latitude: Float, longitude: Float, startDate: String, endDate: String) {
-//        ApiService.create().getHourlyWaveForecasts(latitude, longitude, arrayOf("wave_period", "wave_height", "wave_direction"), startDate, endDate)
-//            .enqueue(object : Callback<WaveForecastResponse> {
-//                override fun onResponse(call: Call<WaveForecastResponse>, response: Response<WaveForecastResponse>) {
-//                    Log.d("MainActivity", "Status code: ${response.code()}")
-//                    if (response.isSuccessful) {
-//                        val waveForecast = response.body() ?: return
-//                        forecastAdapter = WaveForecastAdapter(waveForecast)
-//                        forecastListRV.adapter = forecastAdapter
-//                        Log.d("MainActivity", "Response body: ${response.body()}")
-//                    } else {
-//                        Log.d("MainActivity", "Error: ${response.errorBody()?.string()}")
-//                    }
-//                    Log.d("MainActivity", "Response body: ${response.body()}")
-//                }
-//
-//                override fun onFailure(call: Call<WaveForecastResponse>, t: Throwable) {
-//                    // Handle failure
-//                    Log.d("MainActivity", "Error making API call: ${t.message}")
-//                }
-//            })
-//    }
 }
