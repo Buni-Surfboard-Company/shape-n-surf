@@ -1,12 +1,12 @@
 package com.example.surfapp.ui
 
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.util.TypedValue
 import android.view.*
-import android.widget.AdapterView
-import android.widget.LinearLayout
-import android.widget.PopupWindow
+import android.widget.*
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -16,8 +16,6 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
-import android.widget.Button
-import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 
 class HomescreenFragment : Fragment(R.layout.homescreen_fragment) {
@@ -41,7 +39,7 @@ class HomescreenFragment : Fragment(R.layout.homescreen_fragment) {
                 // Show the context menu for the marker
                 Log.d("Markers location:", "Latitude: ${marker.position.latitude}, Longitude: ${marker.position.longitude}")
                 // open a dialog
-                showMarkerInfo(marker.position.latitude.toString(), marker.position.longitude.toString())
+                showMarkerInfo(marker)
                 // Return true to indicate that we have handled the click event
                 true
             }
@@ -88,22 +86,34 @@ class HomescreenFragment : Fragment(R.layout.homescreen_fragment) {
         }
     }
 
-    private fun showMarkerInfo(lat : String, lon: String) {
+    private fun showMarkerInfo(marker: Marker) {
         val builder = AlertDialog.Builder(requireContext())
-        builder.setMessage("Do you want to see the wave forecast for the selected surf spot?")
+        builder.setMessage("Please select an action for the selected surf spot:")
             .setCancelable(true)
-            .setPositiveButton("Yes") { dialog, which ->
+            .setPositiveButton("Delete saved spot") { dialog, which ->
+                //delete logic here
+                marker.remove()
+            }
+            .setNeutralButton("View wave forecast") { dialog, which ->
                 // Navigate to a new activity or perform other action
                 val bundle = Bundle()
-                bundle.putString("lat", lat)
-                bundle.putString("lon", lon)
+                bundle.putString("lat", marker.position.latitude.toString())
+                bundle.putString("lon", marker.position.longitude.toString())
                 val directions = HomescreenFragmentDirections.navigateToForecastScreen()
                 findNavController().navigate(R.id.forecast_screen, bundle)
             }
-            .setNegativeButton("No") { dialog, which ->
-                // Do nothing
-            }
         val dialog = builder.create()
+        dialog.setOnShowListener {
+            val btnNeutral = dialog.getButton(AlertDialog.BUTTON_NEUTRAL)
+            val btnPositive = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            val layoutParams = btnNeutral.layoutParams as LinearLayout.LayoutParams
+
+            layoutParams.gravity = Gravity.CENTER
+            btnNeutral.layoutParams = layoutParams
+            btnPositive.layoutParams = layoutParams
+            dialog.getButton(DialogInterface.BUTTON_NEUTRAL)?.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
+            dialog.getButton(DialogInterface.BUTTON_POSITIVE)?.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
+        }
         dialog.show()
     }
 }

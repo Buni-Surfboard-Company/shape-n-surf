@@ -51,12 +51,14 @@ class ForecastFragment : Fragment(R.layout.forecast_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
         val backButton = view.findViewById<Button>(R.id.backButton)
 
         // Set an OnClickListener on the back button
         backButton.setOnClickListener {
-            val directions = ForecastFragmentDirections.navigateToHomeScreen()
-            findNavController().navigate(directions)
+//            val directions = ForecastFragmentDirections.navigateToHomeScreen()
+//            findNavController().navigate(directions)
+            handleOnBackPressed()
         }
 
         loadingErrorTV = view.findViewById(R.id.tv_loading_error)
@@ -237,5 +239,8 @@ class ForecastFragment : Fragment(R.layout.forecast_fragment) {
         val dateString = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date(year - 1900, month, day))
 
         viewModel.loadForecast(lat, lon, dateString, dateString, arrayOf("wave_period", "wave_height", "wave_direction"))
+    }
+    private fun handleOnBackPressed() {
+        requireActivity().onBackPressed()
     }
 }
