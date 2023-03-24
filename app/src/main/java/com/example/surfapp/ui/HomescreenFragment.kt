@@ -37,5 +37,10 @@ class HomescreenFragment : Fragment(R.layout.homescreen_fragment) {
             val directions = HomescreenFragmentDirections.navigateToSavedShapesScreen()
             findNavController().navigate(directions)
         }
+
+        pictureBoardViewButton.setOnClickListener{
+            val directions = HomescreenFragmentDirections.navigateToUploadBoardsScreen()
+            findNavController().navigate(directions)
+        }
     }
 }

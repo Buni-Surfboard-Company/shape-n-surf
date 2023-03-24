@@ -23,6 +23,9 @@
         <action
             android:id="@+id/navigate_to_saved_shapes_screen"
             app:destination="@id/saved_shapes_screen" />
+        <action
+            android:id="@+id/navigate_to_upload_boards_screen"
+            app:destination="@id/upload_board_screen"/>
     </fragment>
 
     <fragment
@@ -35,6 +38,12 @@
         android:id="@+id/saved_shapes_screen"
         android:name="com.example.surfapp.ui.SavedShapesFragment"
         android:label="Saved Shapes Screen">
+    </fragment>
+
+    <fragment
+        android:id="@+id/upload_board_screen"
+        android:name="com.example.surfapp.ui.ScanBoardFragment"
+        android:label="Upload Board Screen">
     </fragment>
 
 </navigation>

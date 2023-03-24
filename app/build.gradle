@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.surfapp"
-        minSdk 28
+        minSdk 33
         targetSdk 33
         versionCode 1
         versionName "1.0"
@@ -45,6 +45,7 @@ android {
 
 dependencies {
     implementation project(":opencv")
+
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
@@ -59,9 +60,12 @@ dependencies {
 
     implementation 'com.google.android.material:material:1.8.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+
     implementation 'org.tensorflow:tensorflow-lite-support:0.1.0'
+    implementation 'org.tensorflow:tensorflow-lite:0.1.0'
     implementation 'org.tensorflow:tensorflow-lite-metadata:0.1.0'
     implementation 'org.tensorflow:tensorflow-lite-gpu:2.3.0'
+
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
@@ -78,6 +82,8 @@ dependencies {
 
     ksp 'com.squareup.moshi:moshi-kotlin-codegen:1.14.0'
     ksp 'androidx.room:room-compiler:2.5.0'
+
+    implementation("androidx.cardview:cardview:1.0.0")
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'

@@ -1,23 +1,27 @@
 package com.example.surfapp.ui
 
 import android.app.Activity
+import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
+import android.provider.ContactsContract.Directory
 import android.provider.MediaStore
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
+import androidx.databinding.DataBindingUtil.setContentView
+import androidx.fragment.app.Fragment
 import com.example.surfapp.R
 import com.example.surfapp.ml.Model
 import com.itextpdf.text.Document
 import com.itextpdf.text.Image
-import com.itextpdf.text.pdf.PdfDocument
 import com.itextpdf.text.pdf.PdfWriter
 import org.opencv.android.Utils
 import org.opencv.core.*
@@ -32,13 +36,16 @@ import java.io.FileOutputStream
 import kotlin.math.ceil
 
 
-class ScanBoardActivity : AppCompatActivity() {
+class ScanBoardFragment : Fragment(R.layout.upload_boards_fragment) {
 
     var pickedPhoto: Uri? = null
     var pickedBitMap: Bitmap? = null
+
     private val PAPER_HEIGHT = 8
     private val PPI = 96
     private val TAG = "ScanBoardActivity"
+
+    private lateinit var globalView: View
 
     fun resizeImage(image: Mat): Mat {
         val height = image.height()
@@ -53,7 +60,8 @@ class ScanBoardActivity : AppCompatActivity() {
     fun createPdf(images: List<Mat>) {
         val document = Document()
         val fileName = "board.pdf"
-        PdfWriter.getInstance(document, FileOutputStream(File(filesDir, fileName)))
+
+        PdfWriter.getInstance(document, FileOutputStream(File(requireContext().filesDir, fileName)))
         document.open()
 
         for (image in images){
@@ -78,12 +86,12 @@ class ScanBoardActivity : AppCompatActivity() {
             Log.d(TAG, result.resultCode.toString())
             pickedPhoto = result.data?.data
             //TODO: maybe check build version
-            val source = ImageDecoder.createSource(this.contentResolver, pickedPhoto!!)
+            val source = ImageDecoder.createSource(requireContext().contentResolver, pickedPhoto!!)
             pickedBitMap = ImageDecoder.decodeBitmap(source)
-            val tempImageView: ImageView = findViewById(R.id.tempImage)
+            val tempImageView: ImageView = globalView.findViewById(R.id.tempImage)
             tempImageView.setImageBitmap(pickedBitMap)
 
-            val model = Model.newInstance(this)
+            val model = Model.newInstance(requireContext())
 
             var bmp: Bitmap = pickedBitMap!!.copy(Bitmap.Config.ARGB_8888,true)
             bmp = Bitmap.createScaledBitmap(bmp, 360, 360, true)// 180*180*3 2160 180 720*540*3
@@ -105,7 +113,7 @@ class ScanBoardActivity : AppCompatActivity() {
 
             val img = Mat()
 
-            val newSrc = ImageDecoder.createSource(this.contentResolver, pickedPhoto!!)
+            val newSrc = ImageDecoder.createSource(requireContext().contentResolver, pickedPhoto!!)
             val freshBm = ImageDecoder.decodeBitmap(newSrc) {decoder, _, _ ->
                 decoder.isMutableRequired = true
             }
@@ -231,16 +239,15 @@ class ScanBoardActivity : AppCompatActivity() {
     }
 
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_upload)
-
-        val uploadPhotoButton: Button = findViewById(R.id.uploadButton)
+        globalView = view
+        val uploadPhotoButton: Button = view.findViewById(R.id.uploadButton)
         uploadPhotoButton.setOnClickListener {
             pickImage()
         }
 
-        val takePictureButton: Button = findViewById(R.id.cameraButton)
+        val takePictureButton: Button = view.findViewById(R.id.cameraButton)
         takePictureButton.setOnClickListener {
             takePicture()
         }
@@ -248,7 +255,7 @@ class ScanBoardActivity : AppCompatActivity() {
 
     private fun pickImage(){
         val galleryIntent = Intent(Intent.ACTION_PICK)
-        intent.type = "image/*"
+        galleryIntent.type = "image/*"
         startGalleryLauncher.launch(galleryIntent)
     }
 
@@ -257,7 +264,7 @@ class ScanBoardActivity : AppCompatActivity() {
             if (result.resultCode == Activity.RESULT_OK) {
                 if (result?.data != null) {
                     var bitmap = result.data?.extras?.get("data") as Bitmap
-                    val tempImageView: ImageView = findViewById(R.id.tempImage)
+                    val tempImageView: ImageView = globalView.findViewById(R.id.tempImage)
                     tempImageView.setImageBitmap(bitmap)
                 }
             }
