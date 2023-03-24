@@ -1,11 +1,15 @@
 package com.example.surfapp.ui
 
 
+import android.app.DatePickerDialog
+import android.content.Context
 import com.example.surfapp.api.ApiService
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Button
+import android.widget.DatePicker
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -32,6 +36,16 @@ class ForecastFragment : Fragment(R.layout.forecast_fragment) {
     private lateinit var loadingIndicator: CircularProgressIndicator
 
     private val viewModel: ForecastViewModel by viewModels()
+
+
+
+    // Declare the UI element that will trigger the date picker
+    private lateinit var button: Button
+
+    // Declare the initial date for the date picker
+    private var initialYear: Int = 0
+    private var initialMonth: Int = 0
+    private var initialDay: Int = 0
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -84,13 +98,115 @@ class ForecastFragment : Fragment(R.layout.forecast_fragment) {
                 loadingIndicator.visibility = View.INVISIBLE
             }
         }
+
+        button =    view.findViewById(R.id.datePicker)
+
+        button.setOnClickListener {
+            showDatePickerDialog()
+        }
+
+        // Set the initial date for the date picker (e.g. the current date)
+        val calendar = Calendar.getInstance()
+        initialYear = calendar.get(Calendar.YEAR)
+        initialMonth = calendar.get(Calendar.MONTH)
+        initialDay = calendar.get(Calendar.DAY_OF_MONTH)
+
+        // Set the initial text of the button
+        updateDateButton()
     }
 
     override fun onResume() {
         super.onResume()
+        // Get the SharedPreferences instance
+        val sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
 
-        val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-        viewModel.loadForecast(44.64.toFloat(), (-124.05).toFloat(), currentDate, currentDate, arrayOf("wave_period", "wave_height", "wave_direction"))
+        // Get the current date
+        val calendar = Calendar.getInstance()
+        val defaultYear = calendar.get(Calendar.YEAR)
+        val defaultMonth = calendar.get(Calendar.MONTH)
+        val defaultDay = calendar.get(Calendar.DAY_OF_MONTH)
+
+        // Set default values for year, month, and day if they don't exist in SharedPreferences
+        if (!sharedPreferences.contains("year")) {
+            sharedPreferences.edit().putInt("year", defaultYear).apply()
+        }
+        if (!sharedPreferences.contains("month")) {
+            sharedPreferences.edit().putInt("month", defaultMonth).apply()
+        }
+        if (!sharedPreferences.contains("day")) {
+            sharedPreferences.edit().putInt("day", defaultDay).apply()
+        }
+        // Update the text of the button with the default date
+        updateDateButton()
+        loadForecastData()
+    }
+
+    private fun showDatePickerDialog() {
+        // Get the saved date data from SharedPreferences
+        val sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        val year = sharedPreferences.getInt("year", 0)
+        val month = sharedPreferences.getInt("month", 0)
+        val day = sharedPreferences.getInt("day", 0)
+
+        // Create a new DatePickerDialog instance with the saved date data as the initial date
+        val datePickerDialog = DatePickerDialog(
+            requireContext(), // Context
+            { _: DatePicker, year: Int, month: Int, day: Int ->
+                // Handle selected date here
+                // year, month, and day are the selected values
+                val editor = sharedPreferences.edit()
+                editor.putInt("year", year)
+                editor.putInt("month", month)
+                editor.putInt("day", day)
+                editor.apply()
+
+                // Update the text of the button
+                updateDateButton()
+                // Call the method to load the forecast data using the new date
+                loadForecastData()
+            },
+            year, // Initial year
+            month, // Initial month (0-11)
+            day // Initial day
+        )
+        // Set the minimum and maximum date for the DatePickerDialog
+        val minDate = Calendar.getInstance()
+        minDate.set(2022, 6, 29) // 2022-07-29
+        datePickerDialog.datePicker.minDate = minDate.timeInMillis
+
+        val maxDate = Calendar.getInstance()
+        maxDate.add(Calendar.DATE,+6) // 2023-04-03
+        datePickerDialog.datePicker.maxDate = maxDate.timeInMillis
+
+        // Show the date picker dialog
+        datePickerDialog.show()
+
+        // Show the date picker dialog
+        datePickerDialog.show()
+    }
+
+    private fun updateDateButton() {
+        val sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        val year = sharedPreferences.getInt("year", 0)
+        val month = sharedPreferences.getInt("month", 0)
+        val day = sharedPreferences.getInt("day", 0)
+
+        // Format the date as a string (e.g. "March 24, 2023")
+        val dateString = SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault()).format(Date(year - 1900, month, day))
+
+        // Update the text of the button
+        button.text = dateString
+    }
+    private fun loadForecastData() {
+        val sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        val year = sharedPreferences.getInt("year", 0)
+        val month = sharedPreferences.getInt("month", 0)
+        val day = sharedPreferences.getInt("day", 0)
+
+        // Format the date as a string (e.g. "2023-03-21")
+        val dateString = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date(year - 1900, month, day))
+
+        viewModel.loadForecast(44.64.toFloat(), (-124.05).toFloat(), dateString, dateString, arrayOf("wave_period", "wave_height", "wave_direction"))
     }
 
 

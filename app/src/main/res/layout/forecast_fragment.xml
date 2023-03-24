@@ -16,14 +16,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
+    <Button
+        android:id="@+id/datePicker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|center"
         android:layout_marginTop="3dp"
         android:text="March 12"
         android:textSize="35sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:background="#0981D1"/>
 
     <androidx.recyclerview.widget.RecyclerView
         xmlns:android="http://schemas.android.com/apk/res/android"

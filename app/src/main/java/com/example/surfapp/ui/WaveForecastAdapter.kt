@@ -46,10 +46,13 @@ class WaveForecastAdapter() :
             val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.getDefault())
             val outputFormat = SimpleDateFormat("h a", Locale.getDefault())
             val date = inputFormat.parse(hourly.time[0])
-            timeTextView.text = outputFormat.format(date)
-            waveHeightTextView.text = hourly.waveHeight[0].toString() + " ft"
-            waveDirectionTextView.text = hourly.waveDirection[0].toString() + " ft"
-            wavePeriodTextView.text = hourly.wavePeriod[0].toString() + " ft"
+            if (hourly.waveHeight[0] != null && hourly.waveDirection[0] != null && hourly.wavePeriod[0] != null ) {
+                timeTextView.text = outputFormat.format(date)
+                waveHeightTextView.text = hourly.waveHeight[0].toString() + " ft"
+                waveDirectionTextView.text = hourly.waveDirection[0].toString() + " ft"
+                wavePeriodTextView.text = hourly.wavePeriod[0].toString() + " ft"
+            }
+
         }
     }
 }
