@@ -2,21 +2,22 @@ package com.example.surfapp.ui
 
 import android.app.Activity
 import android.app.Activity.RESULT_OK
+import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
+import android.graphics.Matrix
 import android.net.Uri
 import android.os.Bundle
-import android.provider.ContactsContract.Directory
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.FileProvider
-import androidx.databinding.DataBindingUtil.setContentView
 import androidx.fragment.app.Fragment
 import com.example.surfapp.R
 import com.example.surfapp.ml.Model
@@ -28,11 +29,13 @@ import org.opencv.core.*
 import org.opencv.core.CvType.CV_8UC3
 import org.opencv.imgproc.Imgproc
 import org.tensorflow.lite.DataType
-import org.tensorflow.lite.support.image.TensorImage
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
 import kotlin.math.ceil
 
 
@@ -57,14 +60,16 @@ class ScanBoardFragment : Fragment(R.layout.upload_boards_fragment) {
         return resizedImage
     }
 
-    fun createPdf(images: List<Mat>) {
+    fun createPdf(images: List<Mat>, fileName: String) {
         val document = Document()
-        val fileName = "board.pdf"
+        //TODO if name is taken
 
-        PdfWriter.getInstance(document, FileOutputStream(File(requireContext().filesDir, fileName)))
+        PdfWriter.getInstance(document, FileOutputStream(File(requireContext().filesDir,
+            "$fileName.pdf"
+        )))
         document.open()
 
-        for (image in images){
+        for (image in images) {
             val stream = ByteArrayOutputStream()
             val width: Int = image.rows()
             val height: Int = image.cols()
@@ -76,167 +81,228 @@ class ScanBoardFragment : Fragment(R.layout.upload_boards_fragment) {
             document.add(pdfImg)
         }
 
+
         document.close()
 
     }
 
-    private val startGalleryLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        Log.d(TAG, "startGalleryLauncher")
-        if (result.resultCode == RESULT_OK && result.data != null) {
-            Log.d(TAG, result.resultCode.toString())
-            pickedPhoto = result.data?.data
-            //TODO: maybe check build version
-            val source = ImageDecoder.createSource(requireContext().contentResolver, pickedPhoto!!)
-            pickedBitMap = ImageDecoder.decodeBitmap(source)
-            val tempImageView: ImageView = globalView.findViewById(R.id.tempImage)
-            tempImageView.setImageBitmap(pickedBitMap)
+    fun saveBoard(images: List<Mat>) {
+        val builder = AlertDialog.Builder(context)
 
-            val model = Model.newInstance(requireContext())
+        builder.setTitle("Save As")
+        builder.setMessage("Please enter a file name:")
 
-            var bmp: Bitmap = pickedBitMap!!.copy(Bitmap.Config.ARGB_8888,true)
-            bmp = Bitmap.createScaledBitmap(bmp, 360, 360, true)// 180*180*3 2160 180 720*540*3
+        val input = EditText(context)
+        input.hint = "File name"
+        builder.setView(input)
 
-            Log.d(TAG, "fromBitmap")
-            val tfImage = TensorImage.fromBitmap(bmp)
-            Log.d(TAG, "process")
-            val inputFeature0 = TensorBuffer.createFixedSize(intArrayOf(1, 180, 180, 3), DataType.FLOAT32) //180*180*4
-            Log.d("shape", tfImage.buffer.toString())
-            Log.d("shape", inputFeature0.buffer.toString())
-            inputFeature0.loadBuffer(tfImage.buffer)
-            Log.d(TAG, "process")
+        builder.setPositiveButton("Save") { dialog, which ->
+            val fileName = input.text.toString()
+            createPdf(images, fileName)
+        }
 
-            val outputs = model.process(inputFeature0)
+        builder.setNegativeButton("Cancel") { dialog, which ->
+            dialog.cancel()
+        }
+        builder.show()
+    }
 
-            Log.d(TAG, "outputs")
-            val outputFeature0 = outputs.outputFeature0AsTensorBuffer.floatArray[0]
-            model.close()
+    private fun isBoard(bitmap: Bitmap): Float{
+        val model = Model.newInstance(requireContext())
 
-            val img = Mat()
+        var bmp: Bitmap = bitmap!!.copy(Bitmap.Config.ARGB_8888, true)
+        //  https://stackoverflow.com/questions/72478531/nan-in-tflite-model
+        val resizeBitmap: Bitmap = Bitmap.createScaledBitmap(bmp, 180, 180, true)
 
-            val newSrc = ImageDecoder.createSource(requireContext().contentResolver, pickedPhoto!!)
-            val freshBm = ImageDecoder.decodeBitmap(newSrc) {decoder, _, _ ->
-                decoder.isMutableRequired = true
+        val bytebuffer = ByteBuffer.allocateDirect(4*180*180*3)
+        bytebuffer.order(ByteOrder.nativeOrder())
+        val intValues  = IntArray(180*180)
+        bmp.getPixels(intValues,0,resizeBitmap.width,0,0,resizeBitmap.width,resizeBitmap.height)
+        var pixel = 0
+        for( i in 0 .. 179){
+            for(j in 0..179){
+                val tmpVal = intValues[pixel++]
+                bytebuffer.putFloat(((tmpVal shr 16) and  0xFF)*(1.0f/1))
+                bytebuffer.putFloat(((tmpVal shr 8) and  0xFF)*(1.0f/1))
+                bytebuffer.putFloat((tmpVal and  0xFF)*(1.0f/1))
             }
+        }
+        val inputFeature0 = TensorBuffer.createFixedSize(intArrayOf(1, 180, 180, 3), DataType.FLOAT32)
+        inputFeature0.loadBuffer(bytebuffer)
+        val outputs = model.process(inputFeature0)
+        val outputFeature0 = outputs.outputFeature0AsTensorBuffer
+        val tab = outputFeature0.floatArray
+        model.close()
 
-            Utils.bitmapToMat(freshBm, img)
-            Log.d(TAG, "bitmapToMat")
-            val gray = Mat()
-            Imgproc.cvtColor(img, gray, Imgproc.COLOR_BGR2GRAY)
-//            val width: Int = gray.rows()
-//            val height: Int = gray.cols()
-//            val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-//            Utils.matToBitmap(gray, bitmap)
-//            tempImageView.setImageBitmap(bitmap)
+        return tab[0]
+    }
 
-            val blur = Mat()
-            Imgproc.GaussianBlur(gray, blur, Size(5.0, 5.0), 0.0)
+    private fun processImage(bitmap: Bitmap): Boolean{
+        val tempImageView: ImageView = globalView.findViewById(R.id.tempImage)
+        val img = Mat()
 
-            // apply Canny edge detection
-            val edges = Mat()
-            Imgproc.Canny(blur, edges, 50.0, 150.0)
 
-            // perform morphological operations to remove noise
-            val kernel = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, Size(3.0, 3.0))
-            val dilated = Mat()
-            Imgproc.dilate(edges, dilated, kernel)
-            val eroded = Mat()
-            Imgproc.erode(dilated, eroded, kernel)
+        Utils.bitmapToMat(bitmap, img)
+        Log.d(TAG, "bitmapToMat")
+        val gray = Mat()
+        Imgproc.cvtColor(img, gray, Imgproc.COLOR_BGR2GRAY)
 
-            // find contours in the edges
-            val contours = mutableListOf<MatOfPoint>()
-            Imgproc.findContours(eroded, contours, Mat(), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE)
+        val blur = Mat()
+        Imgproc.GaussianBlur(gray, blur, Size(5.0, 5.0), 0.0)
 
-            // find contour with largest area
-            var maxArea = 0.0
-            var bestContour: MatOfPoint? = null
-            for (contour in contours) {
-                val area = Imgproc.contourArea(contour)
-                if (area > maxArea) {
-                    maxArea = area
-                    bestContour = contour
-                }
+        // apply Canny edge detection
+        val edges = Mat()
+        Imgproc.Canny(blur, edges, 50.0, 150.0)
+
+        // perform morphological operations to remove noise
+        val kernel = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, Size(3.0, 3.0))
+        val dilated = Mat()
+        Imgproc.dilate(edges, dilated, kernel)
+        val eroded = Mat()
+        Imgproc.erode(dilated, eroded, kernel)
+
+        // find contours in the edges
+        val contours = mutableListOf<MatOfPoint>()
+        Imgproc.findContours(
+            eroded,
+            contours,
+            Mat(),
+            Imgproc.RETR_EXTERNAL,
+            Imgproc.CHAIN_APPROX_SIMPLE
+        )
+
+        // find contour with largest area
+        var maxArea = 0.0
+        var bestContour: MatOfPoint? = null
+        for (contour in contours) {
+            val area = Imgproc.contourArea(contour)
+            if (area > maxArea) {
+                maxArea = area
+                bestContour = contour
             }
+        }
 
-            // create blank mask image and fill in best contour with white
-            val mask = Mat.zeros(gray.size(), CvType.CV_8UC1)
-            val white = Scalar(255.0)
-            Imgproc.drawContours(mask, listOf(bestContour), 0, white, -1)
+        // create blank mask image and fill in best contour with white
+        val mask = Mat.zeros(gray.size(), CvType.CV_8UC1)
+        val white = Scalar(255.0)
+        Imgproc.drawContours(mask, listOf(bestContour), 0, white, -1)
 
-//            val width: Int = mask.rows()
-//            val height: Int = mask.cols()
-//            val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-//            Utils.matToBitmap(mask, bitmap)
-//            tempImageView.setImageBitmap(bitmap)
+        val halfMask = mask.clone()
+        halfMask.colRange(mask.cols() / 2, mask.cols())!!.setTo(Scalar(0.0))
 
-            val halfMask = mask.clone()
-            halfMask.colRange(mask.cols() / 2, mask.cols())!!.setTo(Scalar(0.0))
+        // find contours in the half mask
+        val halfContours = mutableListOf<MatOfPoint>()
+        Imgproc.findContours(
+            halfMask,
+            halfContours,
+            Mat(),
+            Imgproc.RETR_EXTERNAL,
+            Imgproc.CHAIN_APPROX_SIMPLE
+        )
 
-            // find contours in the half mask
-            val halfContours = mutableListOf<MatOfPoint>()
-            Imgproc.findContours(halfMask, halfContours, Mat(), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE)
+        // find best contour in the half mask
+        bestContour = halfContours.maxByOrNull { Imgproc.contourArea(it) }
 
-            // find best contour in the half mask
-            bestContour = halfContours.maxByOrNull { Imgproc.contourArea(it) }
+        // create a new blank mask for the halved outline
+        val halvedMask = Mat.zeros(halfMask.size(), CvType.CV_8UC1)
 
-            // create a new blank mask for the halved outline
-            val halvedMask = Mat.zeros(halfMask.size(), CvType.CV_8UC1)
-
-            // draw the halved outline in white
-            Imgproc.drawContours(halvedMask, listOf(bestContour), 0, white, 4)
+        // draw the halved outline in white
+        Imgproc.drawContours(halvedMask, listOf(bestContour), 0, white, 4)
 
 
-            val whiteImg = Mat(halvedMask.rows(), halfMask.cols(), CV_8UC3, Scalar(255.0,255.0,255.0));
+        val whiteImg =
+            Mat(halvedMask.rows(), halfMask.cols(), CV_8UC3, Scalar(255.0, 255.0, 255.0));
 
-            Core.subtract(whiteImg,Scalar(255.0), halvedMask)
+        Core.subtract(whiteImg, Scalar(255.0), halvedMask)
 
-            Imgproc.drawContours(whiteImg, listOf(bestContour), 0, Scalar(0.0), 4)
+        Imgproc.drawContours(whiteImg, listOf(bestContour), 0, Scalar(0.0), 4)
 
-            /********************************/
+        /********************************/
 
-            val rect = Imgproc.boundingRect(bestContour)
+        val rect = Imgproc.boundingRect(bestContour)
 
-            val finalMask = Mat.zeros(whiteImg.size(), CvType.CV_8UC1)
+        val finalMask = Mat.zeros(whiteImg.size(), CvType.CV_8UC1)
 
-            Imgproc.rectangle(finalMask, Point(rect.x.toDouble(), rect.y.toDouble()),
-                Point((rect.x + rect.width).toDouble(), (rect.y + rect.height).toDouble()), white, -1)
+        Imgproc.rectangle(
+            finalMask,
+            Point(rect.x.toDouble(), rect.y.toDouble()),
+            Point((rect.x + rect.width).toDouble(), (rect.y + rect.height).toDouble()),
+            white,
+            -1
+        )
 
-            Core.bitwise_and(whiteImg, whiteImg, finalMask)
+        Core.bitwise_and(whiteImg, whiteImg, finalMask)
 
-            // Crop the image to the bounding box
-            val finalImg = Mat(finalMask, Rect(rect.x, rect.y, rect.width, rect.height))
+        // Crop the image to the bounding box
+        val displayImg = finalMask
+        val finalImg = Mat(finalMask, Rect(rect.x, rect.y, rect.width, rect.height))
 
-            val width: Int = finalImg.rows()
-            val height: Int = finalImg.cols()
-            val bitmap = Bitmap.createBitmap(height, width, Bitmap.Config.ARGB_8888)
-            Utils.matToBitmap(finalImg, bitmap)
-            tempImageView.setImageBitmap(bitmap)
+        val width: Int = finalImg.rows()
+        val height: Int = finalImg.cols()
+        val bitmap = Bitmap.createBitmap(height, width, Bitmap.Config.ARGB_8888)
+        Utils.matToBitmap(finalImg, bitmap)
+        tempImageView.setImageBitmap(bitmap)
 
-            /******************************** pdfer */
+        /******************************** pdfer */
 
-            val boardHeight = 72 // user param
+        val boardHeight = 72 // user param
 
-            val numSections = ceil(boardHeight.toDouble() / PAPER_HEIGHT).toInt()
-            val sectionHeight = bitmap.height / numSections
-            val croppedImages = mutableListOf<Bitmap>()
+        val numSections = ceil(boardHeight.toDouble() / PAPER_HEIGHT).toInt()
+        val sectionHeight = bitmap.height / numSections
+        val croppedImages = mutableListOf<Bitmap>()
 
-            for (i in 0 until numSections) {
-                val startY = i * sectionHeight
-                val endY = (i + 1) * sectionHeight
-                val croppedImage = Bitmap.createBitmap(bitmap, 0, startY, bitmap.width, endY - startY)
-                croppedImages.add(croppedImage)
-            }
+        for (i in 0 until numSections) {
+            val startY = i * sectionHeight
+            val endY = (i + 1) * sectionHeight
+            val croppedImage =
+                Bitmap.createBitmap(bitmap, 0, startY, bitmap.width, endY - startY)
+            croppedImages.add(croppedImage)
+        }
 
-            val images = mutableListOf<Mat>()
-            for (i in 0 until numSections) {
-                val image = Mat()
-                Utils.bitmapToMat(croppedImages[i], image)
-                val resizedImage = resizeImage(image)
-                images.add(resizedImage)
-            }
+        val images = mutableListOf<Mat>()
+        for (i in 0 until numSections) {
+            val image = Mat()
+            Utils.bitmapToMat(croppedImages[i], image)
+            val resizedImage = resizeImage(image)
+            images.add(resizedImage)
+        }
+        val lastwidth: Int = img.rows()
+        val lastheight: Int = img.cols()
+        val lastbitmap = Bitmap.createBitmap(lastwidth, lastheight, Bitmap.Config.ARGB_8888)
+        Utils.matToBitmap(img, lastbitmap)
+        images.add(0, resizeImage(img))
+        tempImageView.setImageBitmap(lastbitmap)
+        saveBoard(images)
 
-            createPdf(images)
+        return true
+    }
+
+    private fun funTime(bitmap: Bitmap){
+        val prob = isBoard(bitmap)
+        Log.d(TAG, prob.toString())
+        if (prob < 1.5){
+            processImage(bitmap)
+        }
+        else {
+            val toast = Toast.makeText(requireContext(), "Not a Board, fool!", Toast.LENGTH_LONG)
+            toast.show()
         }
     }
+
+    private val startGalleryLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            Log.d(TAG, "startGalleryLauncher")
+            if (result.resultCode == RESULT_OK && result.data != null) {
+                Log.d(TAG, result.resultCode.toString())
+                pickedPhoto = result.data?.data
+                val source = ImageDecoder.createSource(requireContext().contentResolver, pickedPhoto!!)
+                val bitmap = ImageDecoder.decodeBitmap(source){ decoder, _, _ ->
+                    decoder.isMutableRequired = true
+                }
+                val resizeBitmap: Bitmap = Bitmap.createScaledBitmap(bitmap, 180, 180, true)
+                if (pickedPhoto != null ) funTime(resizeBitmap!!)
+            }
+        }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -253,7 +319,7 @@ class ScanBoardFragment : Fragment(R.layout.upload_boards_fragment) {
         }
     }
 
-    private fun pickImage(){
+    private fun pickImage() {
         val galleryIntent = Intent(Intent.ACTION_PICK)
         galleryIntent.type = "image/*"
         startGalleryLauncher.launch(galleryIntent)
@@ -264,15 +330,14 @@ class ScanBoardFragment : Fragment(R.layout.upload_boards_fragment) {
             if (result.resultCode == Activity.RESULT_OK) {
                 if (result?.data != null) {
                     var bitmap = result.data?.extras?.get("data") as Bitmap
-                    val tempImageView: ImageView = globalView.findViewById(R.id.tempImage)
-                    tempImageView.setImageBitmap(bitmap)
+                    val resizeBitmap: Bitmap = Bitmap.createScaledBitmap(bitmap, 180, 180, true)
+                    funTime(resizeBitmap)
                 }
             }
         }
 
-    private fun takePicture(){
+    private fun takePicture() {
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         resultLauncher.launch(takePictureIntent)
     }
-
 }

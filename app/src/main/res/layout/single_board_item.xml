@@ -27,8 +27,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="56dp"
         android:text="TextView"
+        android:textColor="#040404"
+        android:textSize="34sp"
         app:layout_constraintEnd_toStartOf="@+id/iv_board_picture"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

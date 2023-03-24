@@ -17,7 +17,7 @@ import com.itextpdf.text.pdf.PdfReader
 import java.io.File
 
 
-class SavedShapesAdapter():RecyclerView.Adapter<SavedShapesAdapter.ViewHolder>() {
+class SavedShapesAdapter(private val onClick: (File) -> Unit):RecyclerView.Adapter<SavedShapesAdapter.ViewHolder>() {
     var boardFiles: List<File> = listOf()
 
     override fun getItemCount() = this.boardFiles.size
@@ -30,24 +30,30 @@ class SavedShapesAdapter():RecyclerView.Adapter<SavedShapesAdapter.ViewHolder>()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.single_board_item, parent, false)
-        return ViewHolder(view)
+        return ViewHolder(view, onClick)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(this.boardFiles[position])
     }
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class ViewHolder(itemView: View, val onClick: (File) -> Unit) : RecyclerView.ViewHolder(itemView) {
         private val pictureIV: ImageView = itemView.findViewById(R.id.iv_board_picture)
         private val nameTV: TextView = itemView.findViewById(R.id.tv_board_name)
-
+        private lateinit var currentFile: File
+        init {
+            itemView.setOnClickListener{
+                currentFile.let(onClick)
+            }
+        }
         fun bind(file: File) {
-            nameTV.text = file.name
+            currentFile = file
+            nameTV.text = file.name.replace(".pdf", "")
 //https://stackoverflow.com/questions/10698360/how-to-convert-a-pdf-page-to-an-image-in-android
             val fileDescriptor: ParcelFileDescriptor =
                 ParcelFileDescriptor.open(File(file.path), MODE_READ_ONLY)
             val renderer = PdfRenderer(fileDescriptor)
-            val page: PdfRenderer.Page = renderer.openPage(1)
+            val page: PdfRenderer.Page = renderer.openPage(0)
             val bitmap =
                 Bitmap.createBitmap(page.width, page.height, Bitmap.Config.ARGB_8888)
             val canvas = Canvas(bitmap)
