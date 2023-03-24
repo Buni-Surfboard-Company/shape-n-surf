@@ -32,6 +32,9 @@
         android:id="@+id/forecast_screen"
         android:name="com.example.surfapp.ui.ForecastFragment"
         android:label="Forecast Screen">
+        <action
+            android:id="@+id/navigate_to_home_screen"
+            app:destination="@id/home_screen" />
     </fragment>
 
     <fragment

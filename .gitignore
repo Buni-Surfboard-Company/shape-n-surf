@@ -50,3 +50,5 @@ Thumbs.db
 # Ignore all OpenCV files
 opencv/
 opencv/build/generated/
+.idea/gradle.xml
+.idea/gradle.xml

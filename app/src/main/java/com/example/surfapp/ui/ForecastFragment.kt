@@ -23,7 +23,9 @@ import androidx.fragment.app.viewModels
 import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.progressindicator.CircularProgressIndicator
+import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -48,6 +50,14 @@ class ForecastFragment : Fragment(R.layout.forecast_fragment) {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val backButton = view.findViewById<Button>(R.id.backButton)
+
+        // Set an OnClickListener on the back button
+        backButton.setOnClickListener {
+            val directions = ForecastFragmentDirections.navigateToHomeScreen()
+            findNavController().navigate(directions)
+        }
 
         loadingErrorTV = view.findViewById(R.id.tv_loading_error)
         loadingIndicator = view.findViewById(R.id.loading_indicator)
@@ -76,7 +86,8 @@ class ForecastFragment : Fragment(R.layout.forecast_fragment) {
          */
         viewModel.error.observe(viewLifecycleOwner) { error ->
             if (error != null) {
-                loadingErrorTV.text = (error.message).toString()
+                val errorMessage = JSONObject((error.message).toString())
+                loadingErrorTV.text = errorMessage.getString("reason")
                 loadingErrorTV.visibility = View.VISIBLE
                 Log.e(tag, "Error fetching forecast: ${error.message}")
             }
