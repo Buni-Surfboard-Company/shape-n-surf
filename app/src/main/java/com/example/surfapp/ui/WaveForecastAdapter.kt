@@ -49,10 +49,9 @@ class WaveForecastAdapter() :
             if (hourly.waveHeight[0] != null && hourly.waveDirection[0] != null && hourly.wavePeriod[0] != null ) {
                 timeTextView.text = outputFormat.format(date)
                 waveHeightTextView.text = hourly.waveHeight[0].toString() + " ft"
-                waveDirectionTextView.text = hourly.waveDirection[0].toString() + " ft"
-                wavePeriodTextView.text = hourly.wavePeriod[0].toString() + " ft"
+                waveDirectionTextView.text = hourly.waveDirection[0].toString() + " °"
+                wavePeriodTextView.text = hourly.wavePeriod[0].toString() + " s"
             }
-
         }
     }
 }
