@@ -41,12 +41,18 @@
         android:id="@+id/saved_shapes_screen"
         android:name="com.example.surfapp.ui.SavedShapesFragment"
         android:label="Saved Shapes Screen">
+        <action
+            android:id="@+id/navigate_to_home_screen"
+            app:destination="@id/home_screen" />
     </fragment>
 
     <fragment
         android:id="@+id/upload_board_screen"
         android:name="com.example.surfapp.ui.ScanBoardFragment"
         android:label="Upload Board Screen">
+        <action
+            android:id="@+id/navigate_to_home_screen"
+            app:destination="@id/home_screen" />
     </fragment>
 
 </navigation>

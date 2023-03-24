@@ -10,20 +10,27 @@ import android.graphics.ImageDecoder
 import android.graphics.Matrix
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.provider.MediaStore
+import android.text.InputFilter
+import android.text.InputType
 import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.example.surfapp.R
 import com.example.surfapp.ml.Model
 import com.itextpdf.text.Document
 import com.itextpdf.text.Image
 import com.itextpdf.text.pdf.PdfWriter
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import org.opencv.android.Utils
 import org.opencv.core.*
 import org.opencv.core.CvType.CV_8UC3
@@ -36,6 +43,7 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import java.util.concurrent.TimeUnit
 import kotlin.math.ceil
 
 
@@ -98,6 +106,7 @@ class ScanBoardFragment : Fragment(R.layout.upload_boards_fragment) {
 
         builder.setPositiveButton("Save") { dialog, which ->
             val fileName = input.text.toString()
+            dialog.dismiss()
             createPdf(images, fileName)
         }
 
@@ -105,6 +114,45 @@ class ScanBoardFragment : Fragment(R.layout.upload_boards_fragment) {
             dialog.cancel()
         }
         builder.show()
+    }
+
+    fun chooseSize(bitmap: Bitmap): Int{
+        var input = 0
+        val inputFilter = InputFilter { source, start, end, dest, dstart, dend ->
+            if (source.toString().matches(Regex("\\d+"))) {
+                null // accept the input
+            } else {
+                "" // reject the input
+            }
+        }
+
+        val editText = EditText(context)
+        editText.filters = arrayOf(inputFilter)
+        editText.inputType = InputType.TYPE_CLASS_NUMBER
+
+        val alertDialogBuilder = AlertDialog.Builder(context)
+        alertDialogBuilder.setView(editText)
+        alertDialogBuilder.setTitle("Enter Height")
+        alertDialogBuilder.setMessage("Please enter height in inches:")
+        alertDialogBuilder.setPositiveButton("OK") { dialog, _ ->
+            input = editText.text.toString().toInt()
+            dialog.dismiss()
+            processImage(bitmap, input)
+        }
+        alertDialogBuilder.setNegativeButton("Cancel") { dialog, _ ->
+            dialog.cancel()
+        }
+        alertDialogBuilder.show()
+
+        return input
+    }
+
+    private fun matToBitmapLocal(mat: Mat): Bitmap{
+        val lastwidth: Int = mat.rows()
+        val lastheight: Int = mat.cols()
+        val lastbitmap = Bitmap.createBitmap(lastwidth, lastheight, Bitmap.Config.ARGB_8888)
+        Utils.matToBitmap(mat, lastbitmap)
+        return lastbitmap
     }
 
     private fun isBoard(bitmap: Bitmap): Float{
@@ -137,12 +185,24 @@ class ScanBoardFragment : Fragment(R.layout.upload_boards_fragment) {
         return tab[0]
     }
 
-    private fun processImage(bitmap: Bitmap): Boolean{
+    private fun showBoard(mats: List<Mat>){
+        val tempImageView: ImageView = requireView().findViewById(R.id.tempImage)
+
+        for (mat in mats){
+            val bm = matToBitmapLocal(mat)
+            tempImageView.postDelayed({
+                tempImageView.setImageBitmap(bm)
+            }, 3000)
+        }
+    }
+
+    private fun processImage(bitmap: Bitmap, scaleSize: Int): Boolean{
         val tempImageView: ImageView = globalView.findViewById(R.id.tempImage)
         val img = Mat()
 
 
         Utils.bitmapToMat(bitmap, img)
+//        showBoard(img)
         Log.d(TAG, "bitmapToMat")
         val gray = Mat()
         Imgproc.cvtColor(img, gray, Imgproc.COLOR_BGR2GRAY)
@@ -154,12 +214,16 @@ class ScanBoardFragment : Fragment(R.layout.upload_boards_fragment) {
         val edges = Mat()
         Imgproc.Canny(blur, edges, 50.0, 150.0)
 
+//        showBoard(edges)
+
         // perform morphological operations to remove noise
         val kernel = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, Size(3.0, 3.0))
         val dilated = Mat()
         Imgproc.dilate(edges, dilated, kernel)
         val eroded = Mat()
         Imgproc.erode(dilated, eroded, kernel)
+
+//        showBoard(eroded)
 
         // find contours in the edges
         val contours = mutableListOf<MatOfPoint>()
@@ -243,9 +307,7 @@ class ScanBoardFragment : Fragment(R.layout.upload_boards_fragment) {
         Utils.matToBitmap(finalImg, bitmap)
         tempImageView.setImageBitmap(bitmap)
 
-        /******************************** pdfer */
-
-        val boardHeight = 72 // user param
+        val boardHeight = scaleSize
 
         val numSections = ceil(boardHeight.toDouble() / PAPER_HEIGHT).toInt()
         val sectionHeight = bitmap.height / numSections
@@ -274,14 +336,26 @@ class ScanBoardFragment : Fragment(R.layout.upload_boards_fragment) {
         tempImageView.setImageBitmap(lastbitmap)
         saveBoard(images)
 
+        val matList = mutableListOf<Mat>()
+        matList.add(img)
+        matList.add(edges)
+        matList.add(eroded)
+        matList.add(img)
+        showBoard(matList)
+
         return true
     }
 
     private fun funTime(bitmap: Bitmap){
+
         val prob = isBoard(bitmap)
         Log.d(TAG, prob.toString())
         if (prob < 1.5){
-            processImage(bitmap)
+            val welcomeTV = requireView().findViewById<TextView>(R.id.welcome)
+            val infoTV = requireView().findViewById<TextView>(R.id.info)
+            welcomeTV.visibility = View.GONE
+            infoTV.visibility = View.GONE
+            chooseSize(bitmap)
         }
         else {
             val toast = Toast.makeText(requireContext(), "Not a Board, fool!", Toast.LENGTH_LONG)
@@ -316,6 +390,14 @@ class ScanBoardFragment : Fragment(R.layout.upload_boards_fragment) {
         val takePictureButton: Button = view.findViewById(R.id.cameraButton)
         takePictureButton.setOnClickListener {
             takePicture()
+        }
+
+        val backButton = view.findViewById<Button>(R.id.backButton)
+
+        // Set an OnClickListener on the back button
+        backButton.setOnClickListener {
+            val directions = ForecastFragmentDirections.navigateToHomeScreen()
+            findNavController().navigate(directions)
         }
     }
 

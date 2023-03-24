@@ -1,53 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="#C6DDE7"
     android:id="@+id/linearLayout2">
 
-    <!--    <Button-->
-    <!--        android:id="@+id/cameraButton"-->
-    <!--        android:layout_width="200dp"-->
-    <!--        android:layout_height="200dp"-->
-    <!--        android:text="Take Picture"-->
-    <!--        />-->
-    <!--    <Button-->
-    <!--        android:id="@+id/uploadButton"-->
-    <!--        android:layout_width="200dp"-->
-    <!--        android:layout_height="200dp"-->
-    <!--        android:text="Upload Picture"/>-->
-    <!--    <ImageView-->
-    <!--        android:id="@+id/tempImage"-->
-    <!--        android:layout_width="200dp"-->
-    <!--        android:layout_height="200dp"/>-->
-
-    <Button
-        android:id="@+id/cameraButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="64dp"
-        android:layout_marginEnd="160dp"
-        android:text="Take Picture"
-        app:layout_constraintEnd_toEndOf="@+id/uploadButton"
-        app:layout_constraintTop_toBottomOf="@+id/tempImage" />
-
-    <Button
-        android:id="@+id/uploadButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="64dp"
-        android:layout_marginEnd="84dp"
-        android:text="Upload Board"
+    <TextView
+        android:id="@+id/topBackgroundImageView"
+        android:layout_width="match_parent"
+        android:layout_height="59dp"
+        android:background="#4eb5f5"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tempImage" />
-
-    <ImageView
-        android:id="@+id/tempImage"
-        android:layout_width="416dp"
-        android:layout_height="373dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@tools:sample/backgrounds/scenic" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/upload_title"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center"
+        android:layout_marginTop="3dp"
+        android:background="@drawable/calendar_button_background"
+        android:text="Upload Board"
+        android:textSize="26dp"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/backButton"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="14dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/baseline_arrow_back_24" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <Button
+            android:id="@+id/cameraButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="64dp"
+            android:layout_marginEnd="156dp"
+            android:text="Take Picture"
+            app:layout_constraintEnd_toEndOf="@+id/uploadButton"
+            app:layout_constraintTop_toBottomOf="@+id/tempImage" />
+
+        <Button
+            android:id="@+id/uploadButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="64dp"
+            android:layout_marginEnd="60dp"
+            android:text="Upload Board"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tempImage" />
+
+        <ImageView
+            android:id="@+id/tempImage"
+
+            android:layout_width="416dp"
+            android:layout_height="373dp"
+            android:layout_marginTop="80dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:srcCompat="@tools:sample/backgrounds/scenic" />
+
+        <TextView
+            android:id="@+id/welcome"
+            android:layout_width="367dp"
+            android:layout_height="85dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="84dp"
+            android:fontFamily="sans-serif-medium"
+            android:text="Welcome To The Stick Scanner!"
+            android:textAlignment="center"
+            android:textAllCaps="false"
+            android:textColor="#5DACEC"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tempImage" />
+
+        <TextView
+            android:id="@+id/info"
+            android:layout_width="264dp"
+            android:layout_height="126dp"
+            android:layout_marginStart="72dp"
+            android:layout_marginTop="12dp"
+            android:text="To begin, select one the buttons below and let the magic happen!"
+            android:textAlignment="center"
+            android:textColor="#4C4C4C"
+            android:textSize="22sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/welcome" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
