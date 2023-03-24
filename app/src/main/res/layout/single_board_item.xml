@@ -1,55 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/linearLayout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp">
 
-    <!--        <ImageView-->
-    <!--            android:id="@+id/iv_board_picture"-->
-    <!--            android:layout_width="wrap_content"-->
-    <!--            android:layout_height="match_parent"-->
-    <!--            app:layout_constraintBottom_toTopOf="@id/tv_board_name"-->
-    <!--            app:layout_constraintLeft_toRightOf="parent"-->
-    <!--            />-->
-
-    <!--        <TextView-->
-    <!--            android:id="@+id/tv_board_name"-->
-    <!--            android:layout_width="wrap_content"-->
-    <!--            android:layout_height="wrap_content"-->
-    <!--            app:layout_constraintTop_toBottomOf="@id/iv_board_picture"-->
-    <!--            app:layout_constraintLeft_toRightOf="parent"/>-->
-
-    <TextView
-        android:id="@+id/tv_board_name"
+    <!-- Left layout with TextView and Delete button -->
+    <LinearLayout
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="56dp"
-        android:text="TextView"
-        android:textColor="#040404"
-        android:textSize="34sp"
-        app:layout_constraintEnd_toStartOf="@+id/iv_board_picture"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/iv_board_picture"
-        android:layout_width="175dp"
-        android:layout_height="139dp"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/tv_board_name"
-         />
+        <TextView
+            android:id="@+id/tv_board_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:text="TextView"
+            android:textColor="#040404"
+            android:textSize="28sp" />
 
-    <Button
-        android:id="@+id/delete_item"
+        <Button
+            android:id="@+id/delete_item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:text="Delete" />
+
+    </LinearLayout>
+
+    <!-- Right layout with ImageView -->
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Delete"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_height="match_parent"
+        android:gravity="end"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/iv_board_picture"
+            android:layout_width="130dp"
+            android:layout_height="162dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginBottom="16dp"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop" />
+
+    </LinearLayout>
+
+</LinearLayout>
