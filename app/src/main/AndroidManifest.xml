@@ -26,6 +26,11 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths"></meta-data>
         </provider>
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="{buildConfig.GOOGLE_API_KEY}"/>
+
         <activity
             android:name=".ui.MainActivity"
             android:exported="true"
