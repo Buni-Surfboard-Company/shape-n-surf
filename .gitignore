@@ -35,6 +35,8 @@ local.properties
 .idea/sqlDataSources.xml
 .idea/dynamic.xml
 .idea/uiDesigner.xml
+.idea/gradle.xml
+settings.gradle
 
 # OS-specific files
 .DS_Store
@@ -44,3 +46,7 @@ local.properties
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Ignore all OpenCV files
+opencv/
+opencv/build/generated/
