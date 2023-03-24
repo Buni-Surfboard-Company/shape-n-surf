@@ -3,10 +3,10 @@ package com.example.surfapp.ui
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.ContextMenu
-import android.view.MenuItem
-import android.view.View
+import android.view.*
+import android.widget.AdapterView
 import android.widget.LinearLayout
+import android.widget.PopupWindow
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -16,32 +16,35 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import android.widget.Button
+import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 
 class HomescreenFragment : Fragment(R.layout.homescreen_fragment) {
+
+    private lateinit var contextMenuView: View
+    private lateinit var contextMenu: PopupWindow
     override fun onViewCreated(
         view: View,
         savedInstanceState: Bundle?
     ) {
+//        setHasOptionsMenu(true)
+
         super.onViewCreated(view, savedInstanceState)
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.map_fragment) as SupportMapFragment
 
+
         mapFragment.getMapAsync { googleMap: GoogleMap ->
             // Set an OnClickListener for the marker
             googleMap.setOnMarkerClickListener { marker ->
-                // Navigate to a new fragment
-                // ...
-                val position = marker.position
-                Log.d("Markers location:", "Latitude: ${position.latitude}, Longitude: ${position.longitude}")
-
-                true // return true to indicate that we have handled the click event
+                // Show the context menu for the marker
+                Log.d("Markers location:", "Latitude: ${marker.position.latitude}, Longitude: ${marker.position.longitude}")
+                // open a dialog
+                showMarkerInfo(marker.position.latitude.toString(), marker.position.longitude.toString())
+                // Return true to indicate that we have handled the click event
+                true
             }
-
-//            googleMap.setOnMarkerClickListener { marker ->
-//                registerForContextMenu(marker)
-//                openContextMenu(marker)
-//                true
-//            }
 
             // Set an OnMapClickListener to add a marker when the user clicks on the map
             googleMap.setOnMapClickListener { latLng ->
@@ -49,11 +52,8 @@ class HomescreenFragment : Fragment(R.layout.homescreen_fragment) {
                 val markerOptions = MarkerOptions().position(latLng)
                 val marker = googleMap.addMarker(markerOptions)
 
-                // Save the marker information to your app's data store
-                // we could use a Room database to store the latitude and longitude
-
                 // Set the title of the marker to the latitude and longitude
-                 marker?.title = "Latitude: ${latLng.latitude}, Longitude: ${latLng.longitude}"
+                marker?.title = "MySurfSpot"
             }
 
             // Enable zoom controls
@@ -86,5 +86,24 @@ class HomescreenFragment : Fragment(R.layout.homescreen_fragment) {
             val directions = HomescreenFragmentDirections.navigateToUploadBoardsScreen()
             findNavController().navigate(directions)
         }
+    }
+
+    private fun showMarkerInfo(lat : String, lon: String) {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setMessage("Do you want to see the wave forecast for the selected surf spot?")
+            .setCancelable(true)
+            .setPositiveButton("Yes") { dialog, which ->
+                // Navigate to a new activity or perform other action
+                val bundle = Bundle()
+                bundle.putString("lat", lat)
+                bundle.putString("lon", lon)
+                val directions = HomescreenFragmentDirections.navigateToForecastScreen()
+                findNavController().navigate(R.id.forecast_screen, bundle)
+            }
+            .setNegativeButton("No") { dialog, which ->
+                // Do nothing
+            }
+        val dialog = builder.create()
+        dialog.show()
     }
 }
