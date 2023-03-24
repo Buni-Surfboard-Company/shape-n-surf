@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">SurfApp</string>
+    <string name="default_Date">March 12</string>
 </resources>
