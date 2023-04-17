@@ -378,8 +378,8 @@ class ScanBoardFragment : Fragment(R.layout.upload_boards_fragment) {
 
     private fun funTime(bitmap: Bitmap){
         val prob = isBoard(bitmap)
-        Log.d(TAG, prob.toString())
-        if (prob < 1.5){
+        Log.d(TAG, prob.toString()) //Check this log to see what the probability is
+        if (prob < 1.5){ // CHANGE THIS to update how aggressive the probability boundary is
             val welcomeTV = requireView().findViewById<TextView>(R.id.welcome)
             val infoTV = requireView().findViewById<TextView>(R.id.info)
             welcomeTV.visibility = View.GONE
